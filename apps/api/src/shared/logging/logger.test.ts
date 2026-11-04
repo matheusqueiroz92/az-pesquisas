@@ -14,6 +14,8 @@ const config: AppConfig = {
   logLevel: 'trace',
   corsOrigins: [],
   sentryDsn: undefined,
+  databaseUrl: 'postgres://az_app:app@127.0.0.1:1/unused',
+  databasePoolMax: 1,
 };
 
 const capture = () => {

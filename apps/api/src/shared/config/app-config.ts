@@ -31,6 +31,9 @@ const envSchema = z
         .default([]),
     ),
     SENTRY_DSN: optional(z.url().optional()),
+    // az_app credentials (never az_owner): RLS must apply to the running API.
+    DATABASE_URL: optional(z.url({ protocol: /^postgres(ql)?$/ })),
+    DATABASE_POOL_MAX: optional(z.coerce.number().int().min(1).max(100).default(10)),
   })
   .superRefine((env, ctx) => {
     if (env.APP_ENV === 'production' && env.NODE_ENV !== 'production') {
@@ -51,6 +54,8 @@ export interface AppConfig {
   readonly logLevel: 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silent';
   readonly corsOrigins: readonly string[];
   readonly sentryDsn: string | undefined;
+  readonly databaseUrl: string;
+  readonly databasePoolMax: number;
 }
 
 export interface ConfigError {
@@ -88,5 +93,7 @@ export const loadConfig = (
     logLevel: e.LOG_LEVEL,
     corsOrigins: e.CORS_ORIGINS,
     sentryDsn: e.SENTRY_DSN,
+    databaseUrl: e.DATABASE_URL,
+    databasePoolMax: e.DATABASE_POOL_MAX,
   });
 };

@@ -7,10 +7,14 @@ import { READINESS_CHECKS } from './health/readiness.js';
 import type { ReadinessCheck } from './health/readiness.js';
 import { APP_CONFIG } from './shared/config/app-config.token.js';
 import type { AppConfig } from './shared/config/app-config.js';
+import { DatabaseLifecycle } from './shared/database/database-lifecycle.js';
+import type { Database } from './shared/database/database.js';
+import { DATABASE } from './shared/database/database.token.js';
 import { ProblemDetailsFilter } from './shared/http/problem-details.filter.js';
 
 export interface AppModuleOptions {
   readonly config: AppConfig;
+  readonly database: Database;
   readonly readinessChecks: readonly ReadinessCheck[];
   /** Extra modules mounted by tests (or, later, feature flags). */
   readonly extraModules?: readonly Type[];
@@ -26,10 +30,12 @@ export class AppModule {
       controllers: [HealthController],
       providers: [
         { provide: APP_CONFIG, useValue: options.config },
+        { provide: DATABASE, useValue: options.database },
+        DatabaseLifecycle,
         { provide: READINESS_CHECKS, useValue: options.readinessChecks },
         { provide: APP_FILTER, useClass: ProblemDetailsFilter },
       ],
-      exports: [APP_CONFIG],
+      exports: [APP_CONFIG, DATABASE],
     };
   }
 }

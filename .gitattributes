@@ -1,0 +1,5 @@
+# Normalize line endings: the team develops on Windows and Linux
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary

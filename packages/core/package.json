@@ -1,0 +1,30 @@
+{
+  "name": "@az-pesquisas/core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Código de domínio puro compartilhado entre API, painel e app (sem rede, sem banco)",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@az-pesquisas/config": "workspace:*",
+    "@vitest/coverage-v8": "^5.1.0",
+    "eslint": "^10.14.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
+  }
+}

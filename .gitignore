@@ -1,0 +1,29 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+build/
+.next/
+out/
+.expo/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# environment — never commit secrets
+.env
+.env.*
+!.env.example
+
+# logs and OS files
+*.log
+.DS_Store
+Thumbs.db
+
+# editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json

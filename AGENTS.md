@@ -107,6 +107,13 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - Textos de interface em pt-BR nos arquivos de tradução.
 - Spec marcada `concluída`; ADR criado se houve decisão nova.
 
+## Banco de dados e multiempresa
+
+- A API conecta como `az_app`, que não é dona de nada e não ignora RLS. Migrações rodam como `az_owner`.
+- Acesso a tabela de negócio só dentro de `database.withTenantTransaction()`, que exige `runWithTenant()` em volta e liga o RLS da organização.
+- Toda tabela nova com dados de organização precisa de `organization_id` (FK para `organizations`), `ENABLE ROW LEVEL SECURITY` e a política `tenant_isolation`, numa migração SQL própria. O teste `rls-coverage.db.test.ts` reprova o build se faltar.
+- Mudou um `schema.ts`? `pnpm db:generate`, revise o SQL gerado e faça o commit da migração junto.
+
 ## Commits e branches
 
 - Conventional Commits em inglês, com escopo da lista em `commitlint.config.mjs`: `feat(surveys): publish questionnaire version`.
@@ -117,6 +124,7 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 
 ```bash
 pnpm install          # instala tudo (Node 22+, pnpm 10)
+pnpm db:up            # Postgres local (necessário para os testes *.db.test.ts)
 pnpm check            # formatação + lint + tipos + dependências + testes
 pnpm test             # testes de todos os pacotes
 pnpm depcruise        # só as regras de arquitetura

@@ -8,19 +8,22 @@ Sistema de pesquisas de campo da AZ Pesquisas: painel web, API e app Android/iOS
 
 - Node.js 22.12 ou superior (`.nvmrc`)
 - pnpm 10.28 ou superior (`npm install -g pnpm@10`). `corepack enable` também funciona, mas no Windows exige o terminal aberto como administrador
-- Docker (a partir da spec 004, para o banco local)
+- Docker Desktop rodando (banco local e testes de banco)
 
 ## Primeiros passos
 
 ```bash
 pnpm install
-pnpm check
+pnpm db:up        # Postgres + PostGIS em Docker, porta 5433
+pnpm check        # os testes de banco usam o Postgres do db:up
 ```
 
 ## Rodar a API localmente
 
 ```bash
 cp apps/api/.env.example apps/api/.env
+pnpm db:up
+pnpm db:migrate
 pnpm --filter @az-pesquisas/core build
 pnpm --filter @az-pesquisas/api dev
 # http://localhost:3000/health/live

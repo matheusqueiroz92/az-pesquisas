@@ -61,6 +61,9 @@ const baseConfig: AppConfig = {
   logLevel: 'info',
   corsOrigins: ['https://painel.example.com'],
   sentryDsn: undefined,
+  // Never reached: these tests replace the readiness checks and touch no table.
+  databaseUrl: 'postgres://az_app:app@127.0.0.1:1/unused',
+  databasePoolMax: 1,
 };
 
 class LogCapture extends Writable {

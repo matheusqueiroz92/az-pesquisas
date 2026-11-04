@@ -13,6 +13,8 @@ import type { DestinationStream } from 'pino';
 import { AppModule } from './app.module.js';
 import type { ReadinessCheck } from './health/readiness.js';
 import type { AppConfig } from './shared/config/app-config.js';
+import { createDatabase } from './shared/database/database.js';
+import type { Database } from './shared/database/database.js';
 import { REQUEST_ID_HEADER, resolveRequestId } from './shared/http/request-id.js';
 import { createLogger, PinoNestLogger } from './shared/logging/logger.js';
 
@@ -20,6 +22,9 @@ import { createLogger, PinoNestLogger } from './shared/logging/logger.js';
 export const BODY_LIMIT_BYTES = 2 * 1024 * 1024;
 
 export interface CreateAppOptions {
+  /** Defaults to a pool built from config.databaseUrl (connects lazily). */
+  readonly database?: Database;
+  /** Defaults to [database]. */
   readonly readinessChecks?: readonly ReadinessCheck[];
   /** Where logs go; defaults to stdout. Tests pass a stream to inspect them. */
   readonly logDestination?: DestinationStream;
@@ -32,6 +37,12 @@ export const createApp = async (
   options: CreateAppOptions = {},
 ): Promise<NestFastifyApplication> => {
   const logger = createLogger(config, options.logDestination);
+  const database =
+    options.database ??
+    createDatabase({ url: config.databaseUrl, poolMax: config.databasePoolMax });
+  const readinessChecks = options.readinessChecks ?? [
+    { name: 'database', check: () => database.ping() },
+  ];
 
   const adapter = new FastifyAdapter({
     loggerInstance: logger,
@@ -46,7 +57,8 @@ export const createApp = async (
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule.forRoot({
       config,
-      readinessChecks: options.readinessChecks ?? [],
+      database,
+      readinessChecks,
       extraModules: options.extraModules ?? [],
     }),
     adapter,

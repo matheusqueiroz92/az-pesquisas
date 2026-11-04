@@ -1,0 +1,28 @@
+# Local development and tests only. Passwords here are not secrets.
+# Start: pnpm db:up   Stop: pnpm db:down   Reset everything: pnpm db:reset
+name: az-pesquisas-local
+
+services:
+  postgres:
+    image: postgis/postgis:17-3.5-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: az_pesquisas
+      AZ_OWNER_PASSWORD: owner
+      AZ_APP_PASSWORD: app
+    ports:
+      # 5433 avoids clashing with a Postgres already installed on the machine.
+      - '5433:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../db:/bootstrap:ro
+      - ./postgres-init/init.sh:/docker-entrypoint-initdb.d/10-init.sh:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d az_pesquisas']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  postgres-data:

@@ -16,6 +16,9 @@ const ADMIN_URL =
 const OWNER_PASSWORD = 'owner';
 const APP_PASSWORD = 'app';
 
+/** Arbitrary constant shared by all test processes to serialize the bootstrap. */
+const BOOTSTRAP_LOCK = 4_242_005;
+
 const bootstrapFile = (name: string): Promise<string> =>
   readFile(fileURLToPath(new URL(`../../../../infra/db/${name}`, import.meta.url)), 'utf8');
 
@@ -70,11 +73,22 @@ export const createTestDatabase = async (): Promise<TestDatabase> => {
   }
 
   const adminDbUrl = withDatabase(ADMIN_URL, name);
-  await runSql(ADMIN_URL, await bootstrapFile('01-roles.sql'));
+  // Test files run in parallel. Roles and their passwords live in catalogs shared by
+  // the whole server, and two concurrent ALTER ROLE on the same role fail with
+  // "tuple concurrently updated". A transaction-scoped advisory lock, taken in the
+  // admin database every test file connects to, serializes this step; the tests
+  // themselves still run in parallel.
   await runSql(
     ADMIN_URL,
-    `ALTER ROLE az_owner PASSWORD '${OWNER_PASSWORD}'; ALTER ROLE az_app PASSWORD '${APP_PASSWORD}';`,
+    `BEGIN;
+     SELECT pg_advisory_xact_lock(${BOOTSTRAP_LOCK});
+     ${await bootstrapFile('01-roles.sql')}
+     ALTER ROLE az_owner PASSWORD '${OWNER_PASSWORD}';
+     ALTER ROLE az_app PASSWORD '${APP_PASSWORD}';
+     COMMIT;`,
   );
+  // 02-database.sql only touches this new database's own catalogs: no lock needed
+  // (advisory locks are per database anyway, so one here would serialize nothing).
   await runSql(adminDbUrl, await bootstrapFile('02-database.sql'));
 
   const ownerUrl = withCredentials(adminDbUrl, 'az_owner', OWNER_PASSWORD);

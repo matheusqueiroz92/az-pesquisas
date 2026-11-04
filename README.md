@@ -7,13 +7,12 @@ Sistema de pesquisas de campo da AZ Pesquisas: painel web, API e app Android/iOS
 ## Requisitos
 
 - Node.js 22.12 ou superior (`.nvmrc`)
-- pnpm 10.28 ou superior (`corepack enable` instala a versão fixada em `package.json`)
+- pnpm 10.28 ou superior (`npm install -g pnpm@10`). `corepack enable` também funciona, mas no Windows exige o terminal aberto como administrador
 - Docker (a partir da spec 004, para o banco local)
 
 ## Primeiros passos
 
 ```bash
-corepack enable
 pnpm install
 pnpm check
 ```

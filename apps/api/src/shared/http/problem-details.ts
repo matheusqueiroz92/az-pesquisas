@@ -8,6 +8,8 @@ export interface ProblemDetails {
   /** Stable, English, machine-readable; the app and the panel translate it to pt-BR. */
   readonly code: string;
   readonly requestId: string;
+  /** Present on VALIDATION_FAILED: which fields failed, never their values. */
+  readonly errors?: readonly { readonly field: string; readonly code: string }[];
 }
 
 export const PROBLEM_CONTENT_TYPE = 'application/problem+json; charset=utf-8';
@@ -51,6 +53,7 @@ export const problemDetails = (input: {
   detail: string;
   instance: string;
   requestId: string;
+  errors?: ProblemDetails['errors'];
 }): ProblemDetails => ({
   type: `urn:az-pesquisas:error:${input.code}`,
   title: TITLES[input.status] ?? 'Error',
@@ -59,4 +62,5 @@ export const problemDetails = (input: {
   instance: input.instance,
   code: input.code,
   requestId: input.requestId,
+  ...(input.errors ? { errors: input.errors } : {}),
 });

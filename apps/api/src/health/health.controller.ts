@@ -1,11 +1,13 @@
 import { Controller, Get, Inject, Res } from '@nestjs/common';
 import type { FastifyReply } from 'fastify';
 
+import { Public } from '../shared/auth/decorators.js';
 import { APP_CONFIG } from '../shared/config/app-config.token.js';
 import type { AppConfig } from '../shared/config/app-config.js';
 import { READINESS_CHECKS, runReadinessChecks } from './readiness.js';
 import type { ReadinessCheck } from './readiness.js';
 
+@Public()
 @Controller('health')
 export class HealthController {
   constructor(

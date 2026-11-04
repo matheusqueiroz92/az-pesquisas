@@ -34,6 +34,10 @@ const envSchema = z
     // az_app credentials (never az_owner): RLS must apply to the running API.
     DATABASE_URL: optional(z.url({ protocol: /^postgres(ql)?$/ })),
     DATABASE_POOL_MAX: optional(z.coerce.number().int().min(1).max(100).default(10)),
+    // HS256 key for access tokens. 32+ characters; generate with: openssl rand -base64 48
+    JWT_SECRET: optional(z.string().min(32)),
+    PANEL_URL: optional(z.url({ protocol: /^https?$/ }).default('http://localhost:3001')),
+    MAIL_DIR: optional(z.string().default('.mail')),
   })
   .superRefine((env, ctx) => {
     if (env.APP_ENV === 'production' && env.NODE_ENV !== 'production') {
@@ -56,6 +60,11 @@ export interface AppConfig {
   readonly sentryDsn: string | undefined;
   readonly databaseUrl: string;
   readonly databasePoolMax: number;
+  readonly jwtSecret: string;
+  /** Base URL of the web panel, used in links sent by e-mail. */
+  readonly panelUrl: string;
+  /** Local development: where the FileMailer writes e-mails. */
+  readonly mailDir: string;
 }
 
 export interface ConfigError {
@@ -95,5 +104,8 @@ export const loadConfig = (
     sentryDsn: e.SENTRY_DSN,
     databaseUrl: e.DATABASE_URL,
     databasePoolMax: e.DATABASE_POOL_MAX,
+    jwtSecret: e.JWT_SECRET,
+    panelUrl: e.PANEL_URL.replace(/\/+$/, ''),
+    mailDir: e.MAIL_DIR,
   });
 };

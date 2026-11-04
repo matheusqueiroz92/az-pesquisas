@@ -37,6 +37,9 @@ const config = (databaseUrl: string): AppConfig => ({
   sentryDsn: undefined,
   databaseUrl,
   databasePoolMax: 2,
+  jwtSecret: 'test-secret-with-at-least-32-characters!',
+  panelUrl: 'http://localhost:3001',
+  mailDir: '.mail-test',
 });
 
 beforeAll(async () => {

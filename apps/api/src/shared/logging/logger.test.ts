@@ -16,6 +16,9 @@ const config: AppConfig = {
   sentryDsn: undefined,
   databaseUrl: 'postgres://az_app:app@127.0.0.1:1/unused',
   databasePoolMax: 1,
+  jwtSecret: 'test-secret-with-at-least-32-characters!',
+  panelUrl: 'http://localhost:3001',
+  mailDir: '.mail-test',
 };
 
 const capture = () => {

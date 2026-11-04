@@ -15,6 +15,8 @@ import type { ReadinessCheck } from './health/readiness.js';
 import type { AppConfig } from './shared/config/app-config.js';
 import { createDatabase } from './shared/database/database.js';
 import type { Database } from './shared/database/database.js';
+import type { Mailer } from './shared/mail/mailer.js';
+import { createFileMailer } from './modules/identity/infrastructure/security-adapters.js';
 import { REQUEST_ID_HEADER, resolveRequestId } from './shared/http/request-id.js';
 import { createLogger, PinoNestLogger } from './shared/logging/logger.js';
 
@@ -24,6 +26,8 @@ export const BODY_LIMIT_BYTES = 2 * 1024 * 1024;
 export interface CreateAppOptions {
   /** Defaults to a pool built from config.databaseUrl (connects lazily). */
   readonly database?: Database;
+  /** Defaults to writing e-mails to files in config.mailDir (local development). */
+  readonly mailer?: Mailer;
   /** Defaults to [database]. */
   readonly readinessChecks?: readonly ReadinessCheck[];
   /** Where logs go; defaults to stdout. Tests pass a stream to inspect them. */
@@ -58,6 +62,7 @@ export const createApp = async (
     AppModule.forRoot({
       config,
       database,
+      mailer: options.mailer ?? createFileMailer(config.mailDir),
       readinessChecks,
       extraModules: options.extraModules ?? [],
     }),

@@ -20,7 +20,24 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.test.ts', 'src/main.ts', 'src/instrument.ts', 'src/migrate.ts'],
+      exclude: [
+        'src/**/*.test.ts',
+        'src/**/__tests__/**',
+        'src/main.ts',
+        'src/instrument.ts',
+        'src/migrate.ts',
+        'src/seed-admin.ts',
+      ],
+      // Definition of Done: domain and application layers at 90% or more (AGENTS.md).
+      thresholds: {
+        'src/modules/**/domain/**': { lines: 90, branches: 90, functions: 90, statements: 90 },
+        'src/modules/**/application/**': {
+          lines: 90,
+          branches: 90,
+          functions: 90,
+          statements: 90,
+        },
+      },
     },
   },
 });

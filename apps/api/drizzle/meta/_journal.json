@@ -15,6 +15,20 @@
       "when": 1793798428858,
       "tag": "0001_tenant_isolation",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793808768739,
+      "tag": "0002_identity",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793808769821,
+      "tag": "0003_identity_security",
+      "breakpoints": true
     }
   ]
 }

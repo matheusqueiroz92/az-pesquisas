@@ -1,6 +1,6 @@
 # ADR-0003 — Zod como fonte única de schemas
 
-- Status: aceita
+- Status: aceita (biblioteca de validação alterada pelo [ADR-0012](./0012-validacao-zod-sem-nestjs-zod.md))
 - Data: 2026-11-03
 
 ## Contexto

@@ -17,6 +17,15 @@ pnpm install
 pnpm check
 ```
 
+## Rodar a API localmente
+
+```bash
+cp apps/api/.env.example apps/api/.env
+pnpm --filter @az-pesquisas/core build
+pnpm --filter @az-pesquisas/api dev
+# http://localhost:3000/health/live
+```
+
 ## Estrutura
 
 | Pasta             | Conteúdo                                                                            |

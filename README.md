@@ -30,6 +30,28 @@ pnpm --filter @az-pesquisas/api dev
 # http://localhost:3000/health/live
 ```
 
+## Rodar o painel localmente
+
+Com a API rodando (seção acima):
+
+```bash
+cp apps/web/.env.example apps/web/.env.local
+pnpm --filter @az-pesquisas/web dev
+# http://localhost:3001 — entre com o admin do seed:admin
+```
+
+O link de "esqueci a senha" não sai por e-mail no ambiente local: ele fica num arquivo `.txt` em `apps/api/.mail/`.
+
+## Testes de ponta a ponta (painel)
+
+Usam a API e o painel de verdade, num banco descartável (`az_e2e`) no mesmo Postgres do `db:up`.
+
+```bash
+pnpm --filter @az-pesquisas/web exec playwright install chromium   # só na primeira vez
+pnpm build
+pnpm test:e2e
+```
+
 ## Estrutura
 
 | Pasta             | Conteúdo                                                                            |
@@ -44,10 +66,11 @@ pnpm --filter @az-pesquisas/api dev
 
 ## Scripts
 
-| Comando                        | O que faz                                               |
-| ------------------------------ | ------------------------------------------------------- |
-| `pnpm check`                   | Formatação, lint, tipos, regras de arquitetura e testes |
-| `pnpm test`                    | Testes de todos os pacotes                              |
-| `pnpm lint` / `pnpm typecheck` | Lint e checagem de tipos via Turborepo                  |
-| `pnpm depcruise`               | Regras de dependência entre camadas e módulos           |
-| `pnpm format`                  | Formata o repositório com Prettier                      |
+| Comando                        | O que faz                                                  |
+| ------------------------------ | ---------------------------------------------------------- |
+| `pnpm check`                   | Formatação, lint, tipos, regras de arquitetura e testes    |
+| `pnpm test:e2e`                | Testes de ponta a ponta do painel (depois de `pnpm build`) |
+| `pnpm test`                    | Testes de todos os pacotes                                 |
+| `pnpm lint` / `pnpm typecheck` | Lint e checagem de tipos via Turborepo                     |
+| `pnpm depcruise`               | Regras de dependência entre camadas e módulos              |
+| `pnpm format`                  | Formata o repositório com Prettier                         |

@@ -71,6 +71,14 @@ module.exports = {
       to: { path: '(\\.test\\.ts|\\.spec\\.ts|/__tests__/)' },
     },
     {
+      name: 'web-browser-code-never-imports-server-code',
+      severity: 'error',
+      comment:
+        'apps/web/src/server holds what only runs on the panel server (tokens, cookies, API calls). Components and lib also run in the browser (spec 007).',
+      from: { path: '^apps/web/src/(components|lib|i18n)/' },
+      to: { path: '^apps/web/src/server/' },
+    },
+    {
       name: 'not-to-unresolvable',
       severity: 'error',
       from: {},
@@ -79,7 +87,9 @@ module.exports = {
   ],
   options: {
     doNotFollow: { path: 'node_modules' },
-    exclude: { path: '(^|/)(dist|build|coverage|\\.turbo|\\.next|\\.expo)/' },
+    exclude: {
+      path: ['(^|/)(dist|build|coverage|\\.turbo|\\.next|\\.expo)/', 'next-env\\.d\\.ts$'],
+    },
     tsPreCompilationDeps: true,
     combinedDependencies: true,
     // Resolves NodeNext-style imports ('./result.js' -> result.ts) the same way tsc does.

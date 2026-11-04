@@ -4,3 +4,5 @@ coverage
 .turbo
 .next
 .expo
+test-results
+playwright-report

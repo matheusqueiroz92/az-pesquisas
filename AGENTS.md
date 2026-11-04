@@ -121,6 +121,15 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - Entrada de dados: sempre `new ZodValidationPipe(SchemaDoContracts)`. Objetos `strictObject` recusam campos desconhecidos (inclusive `organizationId`).
 - Leituras entre organizações só pelas funções `auth_find_*` (devolvem apenas ids). Não crie outras sem ADR.
 
+## Painel web (spec 007)
+
+- O navegador **nunca** recebe tokens. Eles ficam nos cookies `httpOnly` `az_at`/`az_rt`, e só o servidor do painel fala com a API.
+- O navegador chama apenas `/api/auth/*` (login, logout, senha) e `/api/v1/*` (proxy com lista de caminhos em `src/server/api-paths.ts`). Rota nova da API que o navegador precise chamar entra nessa lista, com teste.
+- Renovação de sessão só pelo `refreshCoordinator()` (`src/server/session.ts`): nunca chame `/v1/auth/refresh` direto, ou várias abas derrubam a sessão.
+- `src/components`, `src/lib` e `src/i18n` rodam no navegador e não importam `src/server` (regra do dependency-cruiser).
+- Todo texto de tela fica em `src/i18n/pt-BR.ts`; código de erro novo da API ganha tradução lá (o teste reprova se faltar).
+- Menu e telas usam `can()` de `packages/contracts`; a API recusa de qualquer forma.
+
 ## Contratos com o app (spec 006)
 
 - Questionário, entrevista e sincronização estão em `packages/contracts` (`questionnaire.ts`, `interview.ts`, `sync.ts`, `azp.ts`).
@@ -142,5 +151,6 @@ pnpm check            # formatação + lint + tipos + dependências + testes com
 pnpm seed:admin       # cria a primeira organização e o admin (variáveis SEED_* do .env)
 pnpm test             # testes de todos os pacotes
 pnpm depcruise        # só as regras de arquitetura
+pnpm test:e2e         # ponta a ponta do painel (depois de pnpm build)
 pnpm --filter @az-pesquisas/core test:coverage
 ```

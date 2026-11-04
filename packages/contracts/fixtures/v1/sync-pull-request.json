@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "known": {
+    "surveys": [
+      {
+        "surveyId": "0193a000-0000-7000-8000-000000000001",
+        "versionId": "0193a000-0000-7000-8000-000000000006"
+      }
+    ],
+    "interviewersRevision": null
+  }
+}

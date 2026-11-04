@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "0194b2c3-1a00-7000-8000-000000000002",
+  "surveyId": "0193a000-0000-7000-8000-000000000001",
+  "versionId": "0193a000-0000-7000-8000-000000000002",
+  "interviewerId": "0193a000-0000-7000-8000-000000000003",
+  "appVersion": "1.0.0",
+  "startedAt": "2026-11-10T13:15:00.000Z",
+  "finishedAt": "2026-11-10T13:15:30.000Z",
+  "location": {
+    "start": null,
+    "end": null
+  },
+  "consent": {
+    "accepted": false,
+    "textHash": "9f2c4a1b8e7d6c5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f"
+  },
+  "answers": [],
+  "media": []
+}

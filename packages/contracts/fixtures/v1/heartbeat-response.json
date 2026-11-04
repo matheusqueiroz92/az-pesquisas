@@ -1,0 +1,7 @@
+{
+  "serverTime": "2026-11-10T18:00:05.000Z",
+  "minimumAppVersion": "1.0.0",
+  "policy": {
+    "deleteSyncedAfterDays": 7
+  }
+}

@@ -24,7 +24,8 @@ pnpm check        # os testes de banco usam o Postgres do db:up
 cp apps/api/.env.example apps/api/.env
 pnpm db:up
 pnpm db:migrate
-pnpm --filter @az-pesquisas/core build
+pnpm seed:admin   # primeira organização e admin (ajuste SEED_* no .env)
+pnpm build
 pnpm --filter @az-pesquisas/api dev
 # http://localhost:3000/health/live
 ```

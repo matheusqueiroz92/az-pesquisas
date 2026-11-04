@@ -114,6 +114,13 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - Toda tabela nova com dados de organização precisa de `organization_id` (FK para `organizations`), `ENABLE ROW LEVEL SECURITY` e a política `tenant_isolation`, numa migração SQL própria. O teste `rls-coverage.db.test.ts` reprova o build se faltar.
 - Mudou um `schema.ts`? `pnpm db:generate`, revise o SQL gerado e faça o commit da migração junto.
 
+## Autenticação e permissões
+
+- Toda rota exige access token, exceto as marcadas com `@Public()`. O `AuthGuard` global valida o JWT e o `TenantInterceptor` roda o handler dentro da organização do token.
+- Permissões vêm da matriz em `packages/contracts/src/permissions.ts`. Use `@RequirePermission()` na rota **e** cheque `can()` no caso de uso.
+- Entrada de dados: sempre `new ZodValidationPipe(SchemaDoContracts)`. Objetos `strictObject` recusam campos desconhecidos (inclusive `organizationId`).
+- Leituras entre organizações só pelas funções `auth_find_*` (devolvem apenas ids). Não crie outras sem ADR.
+
 ## Commits e branches
 
 - Conventional Commits em inglês, com escopo da lista em `commitlint.config.mjs`: `feat(surveys): publish questionnaire version`.
@@ -125,7 +132,8 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 ```bash
 pnpm install          # instala tudo (Node 22+, pnpm 10)
 pnpm db:up            # Postgres local (necessário para os testes *.db.test.ts)
-pnpm check            # formatação + lint + tipos + dependências + testes
+pnpm check            # formatação + lint + tipos + dependências + testes com cobertura mínima
+pnpm seed:admin       # cria a primeira organização e o admin (variáveis SEED_* do .env)
 pnpm test             # testes de todos os pacotes
 pnpm depcruise        # só as regras de arquitetura
 pnpm --filter @az-pesquisas/core test:coverage

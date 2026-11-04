@@ -4,13 +4,23 @@ import * as Sentry from '@sentry/node';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
 import { codeForStatus, PROBLEM_CONTENT_TYPE, problemDetails } from './problem-details.js';
+import type { ProblemDetails } from './problem-details.js';
 
 interface ResolvedError {
   readonly status: number;
   readonly code: string;
   readonly detail: string;
   readonly expected: boolean;
+  readonly errors?: ProblemDetails['errors'];
 }
+
+const fieldErrors = (value: unknown): ProblemDetails['errors'] =>
+  Array.isArray(value)
+    ? value.filter(
+        (e): e is { field: string; code: string } =>
+          isRecord(e) && typeof e['field'] === 'string' && typeof e['code'] === 'string',
+      )
+    : undefined;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
@@ -37,6 +47,7 @@ const resolve = (exception: unknown): ResolvedError => {
         code: body['code'],
         detail: typeof body['detail'] === 'string' ? body['detail'] : exception.message,
         expected: status < 500,
+        errors: fieldErrors(body['errors']),
       };
     }
     return {
@@ -90,6 +101,7 @@ export class ProblemDetailsFilter implements ExceptionFilter {
           detail: error.detail,
           instance: request.url.split('?')[0] ?? request.url,
           requestId: request.id,
+          errors: error.errors,
         }),
       );
   }

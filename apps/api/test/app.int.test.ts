@@ -12,10 +12,12 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { createApp } from '../src/app.factory.js';
+import { Public } from '../src/shared/auth/decorators.js';
 import type { AppConfig } from '../src/shared/config/app-config.js';
 import type { ReadinessCheck } from '../src/health/readiness.js';
 
 // Test-only routes used to exercise the error filter and the body limit.
+@Public()
 @Controller('__test')
 class TestController {
   @Get('boom')
@@ -64,6 +66,9 @@ const baseConfig: AppConfig = {
   // Never reached: these tests replace the readiness checks and touch no table.
   databaseUrl: 'postgres://az_app:app@127.0.0.1:1/unused',
   databasePoolMax: 1,
+  jwtSecret: 'test-secret-with-at-least-32-characters!',
+  panelUrl: 'http://localhost:3001',
+  mailDir: '.mail-test',
 };
 
 class LogCapture extends Writable {

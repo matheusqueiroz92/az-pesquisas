@@ -27,3 +27,7 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+
+# local e-mails written by the FileMailer
+.mail/
+.mail-test/

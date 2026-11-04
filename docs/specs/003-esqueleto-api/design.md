@@ -49,5 +49,5 @@ apps/api/
 
 ## Riscos
 
-- **`nestjs-zod` não suporta NestJS 12** (peer `@nestjs/common ^10 || ^11`). O ADR-0003 cita essa biblioteca. Antes da spec 005, decidir entre: (a) um `ZodValidationPipe` próprio de poucas linhas + geração de OpenAPI com `zod` 4 nativo (`z.toJSONSchema`), ou (b) aguardar suporte oficial. Recomendação: (a), registrado como ADR-0012.
+- **`nestjs-zod` não suporta NestJS 12** (peer `@nestjs/common ^10 || ^11`). O ADR-0003 cita essa biblioteca. Antes da spec 005, decidir entre: (a) um `ZodValidationPipe` próprio de poucas linhas + geração de OpenAPI com `zod` 4 nativo (`z.toJSONSchema`), ou (b) aguardar suporte oficial. Decidido em 2026-11-04: opção (a), registrada no [ADR-0012](../../adr/0012-validacao-zod-sem-nestjs-zod.md).
 - TypeScript 6.0 ainda aceita `experimentalDecorators`; o TypeScript 7 precisa ser validado com NestJS antes de migrar (ADR-0011).

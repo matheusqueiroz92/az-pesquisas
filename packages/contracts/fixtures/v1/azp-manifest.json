@@ -1,0 +1,28 @@
+{
+  "format": "azp",
+  "formatVersion": 1,
+  "organizationId": "0193a000-0000-7000-8000-000000000005",
+  "deviceId": "0193a000-0000-7000-8000-000000000004",
+  "createdAt": "2026-11-12T09:00:00.000Z",
+  "counts": {
+    "interviews": 2,
+    "media": 2
+  },
+  "files": [
+    {
+      "path": "interviews.jsonl",
+      "sizeBytes": 5821,
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "path": "media/0193a000-0000-7000-8000-000000009001.jpg",
+      "sizeBytes": 412337,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "path": "media/0193a000-0000-7000-8000-000000009002.png",
+      "sizeBytes": 20480,
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ]
+}

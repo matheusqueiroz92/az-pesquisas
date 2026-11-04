@@ -121,6 +121,12 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - Entrada de dados: sempre `new ZodValidationPipe(SchemaDoContracts)`. Objetos `strictObject` recusam campos desconhecidos (inclusive `organizationId`).
 - Leituras entre organizações só pelas funções `auth_find_*` (devolvem apenas ids). Não crie outras sem ADR.
 
+## Contratos com o app (spec 006)
+
+- Questionário, entrevista e sincronização estão em `packages/contracts` (`questionnaire.ts`, `interview.ts`, `sync.ts`, `azp.ts`).
+- **Estrito no que o app envia** (`z.strictObject`), **tolerante no que o app recebe** (`z.object`).
+- `packages/contracts/fixtures/v1/` é o contrato congelado. **Nunca edite esses arquivos** para fazer um teste passar: se um deles quebrar, a mudança é incompatível e exige `schemaVersion: 2`, mantendo a leitura da v1.
+
 ## Commits e branches
 
 - Conventional Commits em inglês, com escopo da lista em `commitlint.config.mjs`: `feat(surveys): publish questionnaire version`.

@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "surveyId": "0193a000-0000-7000-8000-000000000001",
+  "versionId": "0193a000-0000-7000-8000-000000000002",
+  "versionNumber": 3,
+  "title": "Avaliação da gestão municipal — exemplo",
+  "introText": "Bom dia! Sou pesquisador(a) da AZ Pesquisas.",
+  "settings": {
+    "gps": "optional",
+    "audio": "off",
+    "minDurationSec": 180,
+    "consentText": "Esta pesquisa é anônima. Posso fazer algumas perguntas?"
+  },
+  "questions": [
+    {
+      "id": "0193a000-0000-7000-8000-000000000101",
+      "code": "P01_SEXO",
+      "type": "single_choice",
+      "text": "Sexo do entrevistado (anotar sem perguntar)",
+      "required": true,
+      "shuffleOptions": false,
+      "options": [
+        {
+          "id": "0193a000-0000-7000-8000-000000101101",
+          "code": "1",
+          "label": "Masculino"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000101102",
+          "code": "2",
+          "label": "Feminino"
+        }
+      ]
+    },
+    {
+      "id": "0193a000-0000-7000-8000-000000000102",
+      "code": "P02_IDADE",
+      "type": "number",
+      "text": "Qual a sua idade?",
+      "required": true,
+      "integer": true,
+      "min": 16,
+      "max": 120,
+      "unit": "anos"
+    },
+    {
+      "id": "0193a000-0000-7000-8000-000000000103",
+      "code": "P03_BAIRRO",
+      "type": "text",
+      "text": "Em qual bairro o(a) senhor(a) mora?",
+      "required": false,
+      "multiline": false,
+      "maxLength": 120
+    },
+    {
+      "id": "0193a000-0000-7000-8000-000000000104",
+      "code": "P04_AVALIACAO",
+      "type": "scale",
+      "text": "De 0 a 10, que nota dá para a gestão municipal?",
+      "required": true,
+      "min": 0,
+      "max": 10,
+      "minLabel": "Péssima",
+      "maxLabel": "Ótima"
+    },
+    {
+      "id": "0193a000-0000-7000-8000-000000000105",
+      "code": "P05_AREAS",
+      "type": "multiple_choice",
+      "text": "Quais áreas mais precisam de atenção? (até 3)",
+      "helpText": "Ler as opções. NENHUMA desmarca as demais.",
+      "required": true,
+      "shuffleOptions": true,
+      "minSelections": 1,
+      "maxSelections": 3,
+      "options": [
+        {
+          "id": "0193a000-0000-7000-8000-000000105101",
+          "code": "SAUDE",
+          "label": "Saúde"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000105102",
+          "code": "EDUCACAO",
+          "label": "Educação"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000105103",
+          "code": "SEGURANCA",
+          "label": "Segurança"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000105104",
+          "code": "OUTRO",
+          "label": "Outra (especificar)",
+          "other": true
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000105105",
+          "code": "NENHUMA",
+          "label": "Nenhuma",
+          "exclusive": true,
+          "fixed": true
+        }
+      ]
+    },
+    {
+      "id": "0193a000-0000-7000-8000-000000000106",
+      "code": "P06_SERVICOS",
+      "type": "matrix",
+      "text": "Como avalia cada serviço?",
+      "required": true,
+      "rows": [
+        {
+          "id": "0193a000-0000-7000-8000-000000010601",
+          "code": "SAUDE",
+          "label": "Postos de saúde"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000010602",
+          "code": "EDUCACAO",
+          "label": "Escolas municipais"
+        }
+      ],
+      "options": [
+        {
+          "id": "0193a000-0000-7000-8000-000000106101",
+          "code": "1",
+          "label": "Ruim"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000106102",
+          "code": "2",
+          "label": "Regular"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000106103",
+          "code": "3",
+          "label": "Bom"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000106104",
+          "code": "NS_NR",
+          "label": "Não sabe / não respondeu",
+          "fixed": true
+        }
+      ],
+      "visibleIf": {
+        "question": "P05_AREAS",
+        "op": "notIn",
+        "value": ["NENHUMA"]
+      }
+    },
+    {
+      "id": "0193a000-0000-7000-8000-000000000107",
+      "code": "P07_VOTO",
+      "type": "single_choice",
+      "text": "Se a eleição fosse hoje, em quem votaria?",
+      "required": true,
+      "shuffleOptions": true,
+      "options": [
+        {
+          "id": "0193a000-0000-7000-8000-000000107101",
+          "code": "CAND_A",
+          "label": "Candidato A"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000107102",
+          "code": "CAND_B",
+          "label": "Candidato B"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000107103",
+          "code": "BRANCO_NULO",
+          "label": "Branco / nulo",
+          "fixed": true
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000107104",
+          "code": "NS_NR",
+          "label": "Não sabe / não respondeu",
+          "fixed": true
+        }
+      ],
+      "visibleIf": {
+        "all": [
+          {
+            "question": "P02_IDADE",
+            "op": "gte",
+            "value": 16
+          },
+          {
+            "not": {
+              "question": "P01_SEXO",
+              "op": "notAnswered"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "0193a000-0000-7000-8000-000000000108",
+      "code": "P08_PRIORIDADES",
+      "type": "ranking",
+      "text": "Ordene as prioridades para o próximo ano",
+      "required": true,
+      "maxRanked": 3,
+      "options": [
+        {
+          "id": "0193a000-0000-7000-8000-000000108101",
+          "code": "OBRAS",
+          "label": "Obras"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000108102",
+          "code": "EMPREGO",
+          "label": "Emprego"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000108103",
+          "code": "SAUDE",
+          "label": "Saúde"
+        },
+        {
+          "id": "0193a000-0000-7000-8000-000000108104",
+          "code": "LAZER",
+          "label": "Lazer"
+        }
+      ],
+      "visibleIf": {
+        "any": [
+          {
+            "question": "P04_AVALIACAO",
+            "op": "lte",
+            "value": 5
+          },
+          {
+            "question": "P07_VOTO",
+            "op": "in",
+            "value": ["NS_NR", "BRANCO_NULO"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "0193a000-0000-7000-8000-000000000109",
+      "code": "P09_NASCIMENTO",
+      "type": "date",
+      "text": "Data de nascimento (opcional)",
+      "required": false,
+      "min": "1900-01-01",
+      "max": "2010-12-31"
+    },
+    {
+      "id": "0193a000-0000-7000-8000-000000000110",
+      "code": "P10_FOTO",
+      "type": "photo",
+      "text": "Foto da fachada (sem pessoas)",
+      "required": false,
+      "maxPhotos": 2
+    },
+    {
+      "id": "0193a000-0000-7000-8000-000000000111",
+      "code": "P11_ASSINATURA",
+      "type": "signature",
+      "text": "Assinatura do entrevistado",
+      "required": false,
+      "visibleIf": {
+        "question": "P10_FOTO",
+        "op": "answered"
+      }
+    }
+  ]
+}

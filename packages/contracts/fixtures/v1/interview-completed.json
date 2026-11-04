@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "id": "0194b2c3-1a00-7000-8000-000000000001",
+  "surveyId": "0193a000-0000-7000-8000-000000000001",
+  "versionId": "0193a000-0000-7000-8000-000000000002",
+  "interviewerId": "0193a000-0000-7000-8000-000000000003",
+  "appVersion": "1.0.0",
+  "startedAt": "2026-11-10T13:02:11.000Z",
+  "finishedAt": "2026-11-10T13:09:40.000Z",
+  "location": {
+    "start": {
+      "lat": -14.8615,
+      "lng": -40.8442,
+      "accuracyM": 8.5,
+      "capturedAt": "2026-11-10T13:02:15.000Z",
+      "mocked": false
+    },
+    "end": null
+  },
+  "consent": {
+    "accepted": true,
+    "textHash": "9f2c4a1b8e7d6c5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f"
+  },
+  "answers": [
+    {
+      "questionId": "0193a000-0000-7000-8000-000000000101",
+      "kind": "choice",
+      "optionIds": ["0193a000-0000-7000-8000-000000101102"]
+    },
+    {
+      "questionId": "0193a000-0000-7000-8000-000000000102",
+      "kind": "number",
+      "value": 34
+    },
+    {
+      "questionId": "0193a000-0000-7000-8000-000000000103",
+      "kind": "text",
+      "text": "Candeias"
+    },
+    {
+      "questionId": "0193a000-0000-7000-8000-000000000104",
+      "kind": "number",
+      "value": 4
+    },
+    {
+      "questionId": "0193a000-0000-7000-8000-000000000105",
+      "kind": "choice",
+      "optionIds": ["0193a000-0000-7000-8000-000000105101", "0193a000-0000-7000-8000-000000105104"],
+      "otherText": "Iluminação pública"
+    },
+    {
+      "questionId": "0193a000-0000-7000-8000-000000000106",
+      "kind": "matrix",
+      "rows": [
+        {
+          "rowId": "0193a000-0000-7000-8000-000000010601",
+          "optionId": "0193a000-0000-7000-8000-000000106101"
+        },
+        {
+          "rowId": "0193a000-0000-7000-8000-000000010602",
+          "optionId": "0193a000-0000-7000-8000-000000106103"
+        }
+      ]
+    },
+    {
+      "questionId": "0193a000-0000-7000-8000-000000000107",
+      "kind": "choice",
+      "optionIds": ["0193a000-0000-7000-8000-000000107104"]
+    },
+    {
+      "questionId": "0193a000-0000-7000-8000-000000000108",
+      "kind": "ranking",
+      "optionIds": [
+        "0193a000-0000-7000-8000-000000108103",
+        "0193a000-0000-7000-8000-000000108102",
+        "0193a000-0000-7000-8000-000000108101"
+      ]
+    },
+    {
+      "questionId": "0193a000-0000-7000-8000-000000000109",
+      "kind": "date",
+      "value": "1992-03-15"
+    },
+    {
+      "questionId": "0193a000-0000-7000-8000-000000000110",
+      "kind": "media",
+      "mediaIds": ["0193a000-0000-7000-8000-000000009001"]
+    },
+    {
+      "questionId": "0193a000-0000-7000-8000-000000000111",
+      "kind": "media",
+      "mediaIds": ["0193a000-0000-7000-8000-000000009002"]
+    }
+  ],
+  "media": [
+    {
+      "id": "0193a000-0000-7000-8000-000000009001",
+      "kind": "photo",
+      "mimeType": "image/jpeg",
+      "sizeBytes": 412337,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "id": "0193a000-0000-7000-8000-000000009002",
+      "kind": "signature",
+      "mimeType": "image/png",
+      "sizeBytes": 20480,
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ]
+}

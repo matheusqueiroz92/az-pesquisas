@@ -1,0 +1,38 @@
+{
+  "name": "@az-pesquisas/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Design system do AZ Pesquisas: cores, tipografia, raios e paleta de gráficos (painel e app)",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./theme.css": {
+      "style": "./theme.css",
+      "default": "./theme.css"
+    },
+    "./az-symbol.svg": "./assets/az-symbol.svg"
+  },
+  "files": [
+    "dist",
+    "theme.css",
+    "assets"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@az-pesquisas/config": "workspace:*",
+    "@types/node": "^22.20.5",
+    "@vitest/coverage-v8": "^5.1.0",
+    "eslint": "^10.14.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
+  }
+}

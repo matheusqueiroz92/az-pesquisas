@@ -5,6 +5,10 @@ export const t = {
   app: {
     name: 'AZ Pesquisas',
     tagline: 'Painel de pesquisas de campo',
+    byline: 'Um produto AZ Work Center',
+    manifesto: 'Do questionário ao resultado, com o campo sincronizado.',
+    manifestoDetail:
+      'Monte o questionário, acompanhe as entrevistas dos tablets e analise os resultados num só lugar.',
   },
   nav: {
     home: 'Início',
@@ -14,6 +18,7 @@ export const t = {
   },
   login: {
     title: 'Entrar no painel',
+    subtitle: 'Use o e-mail e a senha cadastrados pelo administrador.',
     email: 'E-mail',
     password: 'Senha',
     submit: 'Entrar',
@@ -44,6 +49,24 @@ export const t = {
     intro:
       'Este é o painel do AZ Pesquisas. As telas de pesquisas e dispositivos chegam na próxima fase.',
     yourRole: 'Seu papel',
+    shortcuts: 'Atalhos',
+    shortcutHints: {
+      '/usuarios':
+        'Cadastre pesquisadores, coordenadores e analistas e defina o que cada um pode fazer.',
+      '/minha-conta': 'Veja seus dados e troque sua senha.',
+    } as Record<string, string>,
+    nextTitle: 'O que chega na próxima etapa',
+    next: [
+      {
+        title: 'Pesquisas e questionários',
+        body: 'Todos os tipos de pergunta, com regras de exibição.',
+      },
+      { title: 'Dispositivos', body: 'Vincular os tablets de campo e acompanhar a sincronização.' },
+      {
+        title: 'Resultados',
+        body: 'Tabelas, gráficos e cruzamentos, com localização das entrevistas.',
+      },
+    ],
   },
   users: {
     title: 'Usuários',

@@ -54,15 +54,16 @@ pnpm test:e2e
 
 ## Estrutura
 
-| Pasta             | Conteúdo                                                                            |
-| ----------------- | ----------------------------------------------------------------------------------- |
-| `apps/`           | `api` (NestJS), `web` (Next.js), `mobile` (Expo) — criados nas specs 003, 007 e 008 |
-| `packages/core`   | Código de domínio puro compartilhado (`Result`, motor do questionário)              |
-| `packages/config` | TypeScript, ESLint e Prettier compartilhados                                        |
-| `docs/adr`        | Decisões de arquitetura                                                             |
-| `docs/specs`      | Uma pasta por funcionalidade (spec, design, tasks)                                  |
-| `docs/templates`  | Modelos de spec, design e tasks                                                     |
-| `infra/`          | Docker Compose e scripts de operação                                                |
+| Pasta                    | Conteúdo                                                                            |
+| ------------------------ | ----------------------------------------------------------------------------------- |
+| `apps/`                  | `api` (NestJS), `web` (Next.js), `mobile` (Expo) — criados nas specs 003, 007 e 008 |
+| `packages/core`          | Código de domínio puro compartilhado (`Result`, motor do questionário)              |
+| `packages/design-tokens` | Design system: cores AZ, tipografia, paleta de gráficos, símbolo AZ                 |
+| `packages/config`        | TypeScript, ESLint e Prettier compartilhados                                        |
+| `docs/adr`               | Decisões de arquitetura                                                             |
+| `docs/specs`             | Uma pasta por funcionalidade (spec, design, tasks)                                  |
+| `docs/templates`         | Modelos de spec, design e tasks                                                     |
+| `infra/`                 | Docker Compose e scripts de operação                                                |
 
 ## Scripts
 

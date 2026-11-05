@@ -36,7 +36,7 @@ export function ChangePasswordForm() {
       onSubmit={(event) => {
         void onSubmit(event);
       }}
-      className="flex max-w-sm flex-col gap-4"
+      className="flex max-w-sm flex-col gap-5"
     >
       {state.kind === 'done' ? <Alert tone="success">{t.account.changed}</Alert> : null}
       {state.kind === 'error' ? <Alert tone="error">{state.message}</Alert> : null}

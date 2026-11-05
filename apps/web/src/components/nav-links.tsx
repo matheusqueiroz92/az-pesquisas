@@ -1,27 +1,41 @@
 'use client';
 
+import { House, UserRound, UsersRound } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { cn } from '@/lib/cn';
 import type { NavItem } from '@/lib/navigation';
 
+const ICONS: Readonly<Record<string, LucideIcon>> = {
+  '/': House,
+  '/usuarios': UsersRound,
+  '/minha-conta': UserRound,
+};
+
 export function NavLinks({ items }: { items: readonly NavItem[] }) {
   const pathname = usePathname();
   return (
-    <ul className="flex flex-col gap-1">
+    <ul className="flex gap-1 md:flex-col">
       {items.map((item) => {
         const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+        const Icon = ICONS[item.href] ?? House;
         return (
           <li key={item.href}>
             <Link
               href={item.href}
               aria-current={active ? 'page' : undefined}
               className={cn(
-                'block rounded-md px-3 py-2 text-sm font-medium',
-                active ? 'bg-brand-50 text-brand-900' : 'text-slate-600 hover:bg-slate-100',
+                // The red bar on the active item is the "linha AZ" of the panel.
+                'relative flex h-11 items-center gap-3 rounded-sm px-3 text-sm font-semibold whitespace-nowrap transition-colors',
+                'before:absolute before:inset-y-2 before:left-0 before:w-[3px] before:rounded-pill before:bg-sidebar-accent before:opacity-0 before:transition-opacity',
+                active
+                  ? 'bg-sidebar-hover text-sidebar-foreground before:opacity-100'
+                  : 'text-sidebar-muted-foreground hover:bg-sidebar-hover hover:text-sidebar-foreground',
               )}
             >
+              <Icon aria-hidden className="size-[18px] shrink-0" strokeWidth={1.75} />
               {item.label}
             </Link>
           </li>

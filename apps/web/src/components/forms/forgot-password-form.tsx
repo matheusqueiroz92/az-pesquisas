@@ -27,8 +27,8 @@ export function ForgotPasswordForm() {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-lg font-semibold">{t.forgot.title}</h1>
+    <div className="flex flex-col gap-5">
+      <h1 className="text-3xl font-extrabold tracking-tight">{t.forgot.title}</h1>
       {state.kind === 'sent' ? (
         <Alert tone="success">{t.forgot.sent}</Alert>
       ) : (
@@ -36,9 +36,9 @@ export function ForgotPasswordForm() {
           onSubmit={(event) => {
             void onSubmit(event);
           }}
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-5"
         >
-          <p className="text-sm text-slate-600">{t.forgot.intro}</p>
+          <p className="text-sm text-muted-foreground">{t.forgot.intro}</p>
           {state.kind === 'error' ? <Alert tone="error">{state.message}</Alert> : null}
           <TextField
             label={t.login.email}
@@ -47,12 +47,15 @@ export function ForgotPasswordForm() {
             autoComplete="email"
             required
           />
-          <Button type="submit" disabled={state.kind === 'pending'}>
+          <Button type="submit" disabled={state.kind === 'pending'} className="w-full">
             {t.forgot.submit}
           </Button>
         </form>
       )}
-      <Link href="/login" className="text-center text-sm text-brand-700 underline">
+      <Link
+        href="/login"
+        className="self-start text-sm font-semibold text-link underline decoration-1 underline-offset-4 hover:decoration-2"
+      >
         {t.forgot.back}
       </Link>
     </div>

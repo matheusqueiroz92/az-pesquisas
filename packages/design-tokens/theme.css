@@ -1,0 +1,103 @@
+/*
+ * AZ Pesquisas design tokens for Tailwind 4 (spec 012).
+ * Same values as src/tokens.ts; tokens.test.ts fails if they drift.
+ * Import after `@import 'tailwindcss'`. Tailwind's default palette is removed:
+ * components use the semantic names below (bg-surface, text-muted-foreground...).
+ */
+@theme {
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* Brand primitives (AZ Work Center manual) */
+  --color-az-red-500: #ef233c;
+  --color-az-red-600: #e21d2f;
+  --color-az-red-700: #c9182b;
+  --color-az-ink-950: #090a0c;
+  --color-az-carbon-900: #111317;
+  --color-az-graphite-800: #1a1d22;
+  --color-az-steel-700: #2b3038;
+  --color-az-mist-400: #a9b0ba;
+  --color-az-paper-50: #f4f1eb;
+
+  /* Semantic roles (light) */
+  --color-background: #f4f1eb;
+  --color-foreground: #111317;
+  --color-surface: #ffffff;
+  --color-surface-sunken: #ebe7df;
+  --color-muted: #e7e3dc;
+  --color-muted-foreground: #535861;
+  --color-border: #ddd8cf;
+  --color-border-strong: #c8c5bf;
+  --color-primary: #e21d2f;
+  --color-primary-hover: #c9182b;
+  --color-primary-foreground: #ffffff;
+  --color-link: #c9182b;
+  --color-ring: #c9182b;
+  --color-success: #2f9e62;
+  --color-success-foreground: #1f6b43;
+  --color-success-soft: #e3f2ea;
+  --color-warning: #d97706;
+  --color-warning-foreground: #a84a06;
+  --color-warning-soft: #fcefd9;
+  --color-error: #d9363e;
+  --color-error-foreground: #b4232b;
+  --color-error-soft: #fbe4e5;
+  --color-info: #2563eb;
+  --color-info-soft: #e3ecfc;
+
+  /* Sidebar (dark) */
+  --color-sidebar: #111317;
+  --color-sidebar-foreground: #f4f1eb;
+  --color-sidebar-muted-foreground: #a9b0ba;
+  --color-sidebar-border: #2b3038;
+  --color-sidebar-hover: #1a1d22;
+  --color-sidebar-accent: #ef233c;
+
+  /* Charts (light): fixed order, see tokens.ts */
+  --color-chart-1: #e21d2f;
+  --color-chart-2: #2a78d6;
+  --color-chart-3: #1baf7a;
+  --color-chart-4: #eb6834;
+  --color-chart-5: #6250d6;
+  --color-chart-6: #008300;
+  --color-chart-7: #eda100;
+  --color-chart-8: #e87ba4;
+  --color-chart-other: #8b909a;
+
+  /* Typography */
+  --font-sans: 'Manrope Variable', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Newsreader Variable', 'Newsreader', ui-serif, Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.1rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.35rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.6rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.65rem;
+  --text-xl: 1.375rem;
+  --text-xl--line-height: 1.8rem;
+  --text-2xl: 1.75rem;
+  --text-2xl--line-height: 2.1rem;
+  --text-3xl: 2.25rem;
+  --text-3xl--line-height: 2.5rem;
+  --text-display: 3.25rem;
+  --text-display--line-height: 3.3rem;
+
+  /* Shape */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 0 rgb(17 19 23 / 0.04), 0 8px 24px -12px rgb(17 19 23 / 0.12);
+  --shadow-dialog: 0 24px 64px -16px rgb(9 10 12 / 0.35);
+
+  --spacing-touch: 44px;
+
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+}

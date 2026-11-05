@@ -32,9 +32,12 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
   if (state.kind === 'done') {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         <Alert tone="success">{t.reset.done}</Alert>
-        <Link href="/login" className="text-center text-sm text-brand-700 underline">
+        <Link
+          href="/login"
+          className="self-start text-sm font-semibold text-link underline decoration-1 underline-offset-4 hover:decoration-2"
+        >
           {t.forgot.back}
         </Link>
       </div>
@@ -45,9 +48,9 @@ export function ResetPasswordForm({ token }: { token: string }) {
       onSubmit={(event) => {
         void onSubmit(event);
       }}
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-5"
     >
-      <h1 className="text-lg font-semibold">{t.reset.title}</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">{t.reset.title}</h1>
       {state.kind === 'error' ? <Alert tone="error">{state.message}</Alert> : null}
       <TextField
         label={t.reset.newPassword}
@@ -65,7 +68,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
         autoComplete="new-password"
         required
       />
-      <Button type="submit" disabled={state.kind === 'pending'}>
+      <Button type="submit" disabled={state.kind === 'pending'} className="w-full">
         {t.reset.submit}
       </Button>
     </form>

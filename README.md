@@ -56,7 +56,9 @@ O app usa banco criptografado (SQLCipher), que não roda no Expo Go: ele é inst
    - `JAVA_HOME` = `C:\Program Files\Android\Android Studio\jbr`
    - Acrescente ao `Path`: `%ANDROID_HOME%\platform-tools` e `%ANDROID_HOME%\emulator`
 5. Os terminais do VS Code/Cursor só enxergam variáveis novas depois que o editor é fechado e aberto de novo.
-6. Se o build reclamar de caminho longo ("Filename longer than 260 characters"), ative caminhos longos no Windows (PowerShell como administrador): `New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force` e reinicie.
+6. **Caminhos longos (obrigatório no Windows):** o build nativo gera caminhos de mais de 300 caracteres. São dois ajustes, uma vez só:
+   - PowerShell **como administrador**: `New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force`, depois reinicie o PC.
+   - Troque o Ninja do Android por um que aceite caminhos longos (1.12 ou mais novo): baixe `ninja-win.zip` em <https://github.com/ninja-build/ninja/releases>, renomeie `%LOCALAPPDATA%\Android\Sdk\cmake\3.22.1\bin\ninja.exe` para `ninja.exe.old` e coloque o `ninja.exe` novo no lugar. Confira com `& "$env:ANDROID_HOME\cmake\3.22.1\bin\ninja.exe" --version`.
 
 **Para rodar:**
 
@@ -74,7 +76,7 @@ Remove-Item -Recurse -Force apps/mobile/android
 pnpm --filter @az-pesquisas/mobile android
 ```
 
-Se aparecer `ninja: error: mkdir(...): No such file or directory`, o caminho ficou longo demais para o Windows. Mova o repositório para uma pasta curta (por exemplo `C:\dev\az-pesquisas`), apague `node_modules` e `apps\mobile\android` e rode `pnpm install` de novo.
+Erros `Filename longer than 260 characters` ou `ninja: error: mkdir(...)` significam que o passo 6 de "Uma vez só" ainda não foi feito.
 
 Nas vezes seguintes, com o app já instalado: `pnpm --filter @az-pesquisas/mobile start` e abra o app no emulador. Mudou algo nativo (`app.config.ts`, módulo novo)? Rode `android` de novo.
 

@@ -16,5 +16,6 @@ Cada arquivo registra uma decisão que vale para todo o projeto. Uma decisão s�
 | [0010](./0010-tres-ambientes.md)               | Ambientes local, homologação e produção                 |
 | [0011](./0011-versoes-de-ferramentas.md)       | TypeScript 6.0 e pnpm 10                                |
 | [0012](./0012-validacao-zod-sem-nestjs-zod.md) | Validação com Zod sem `nestjs-zod` (pipe próprio)       |
+| [0013](./0013-pnpm-node-linker-hoisted.md)     | `node_modules` plano no pnpm (build Android no Windows) |
 
 Novo ADR: copie o formato de um existente, use o próximo número e adicione a linha nesta tabela.

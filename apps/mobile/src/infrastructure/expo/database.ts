@@ -15,8 +15,7 @@ const adapt = (db: SQLiteDatabase): SqlDatabase => ({
   execAsync: (sql) => db.execAsync(sql),
   runAsync: (sql, params) => db.runAsync(sql, [...params]),
   getFirstAsync: (sql) => db.getFirstAsync(sql),
-  withExclusiveTransactionAsync: (task) =>
-    db.withExclusiveTransactionAsync((txn) => task(adapt(txn))),
+  withTransactionAsync: (task) => db.withTransactionAsync(task),
   closeAsync: () => db.closeAsync(),
 });
 

@@ -10,8 +10,18 @@ const KEY = 'a'.repeat(64);
 const fakeDatabase = (options: { cipher?: boolean; userVersion?: number } = {}) => {
   const log: string[] = [];
   let userVersion = options.userVersion ?? 0;
+  // Like SQLCipher: every statement on a connection that did not get the key fails.
+  let keyed = false;
+  const requireKey = (sql: string) => {
+    if (sql.startsWith('PRAGMA key')) {
+      keyed = true;
+    } else if (!keyed) {
+      throw new Error('file is not a database');
+    }
+  };
   const db: SqlDatabase = {
     execAsync: vi.fn((sql: string) => {
+      requireKey(sql);
       log.push(sql.trim());
       const set = /PRAGMA user_version = (\d+)/.exec(sql);
       if (set?.[1]) {
@@ -20,6 +30,7 @@ const fakeDatabase = (options: { cipher?: boolean; userVersion?: number } = {}) 
       return Promise.resolve();
     }),
     getFirstAsync: vi.fn((sql: string): Promise<unknown> => {
+      requireKey(sql);
       log.push(sql.trim());
       if (sql.includes('cipher_version')) {
         return Promise.resolve(options.cipher === false ? null : { cipher_version: '4.6.1' });
@@ -30,12 +41,14 @@ const fakeDatabase = (options: { cipher?: boolean; userVersion?: number } = {}) 
       return Promise.resolve(null);
     }) as SqlDatabase['getFirstAsync'],
     runAsync: vi.fn((sql: string) => {
+      requireKey(sql);
       log.push(sql.trim());
       return Promise.resolve();
     }),
-    withExclusiveTransactionAsync: vi.fn(async (task: (txn: SqlDatabase) => Promise<void>) => {
+    // Same connection (expo-sqlite withTransactionAsync): it already has the key.
+    withTransactionAsync: vi.fn(async (task: () => Promise<void>) => {
       log.push('BEGIN');
-      await task(db);
+      await task();
       log.push('COMMIT');
     }),
     closeAsync: vi.fn(() => Promise.resolve()),
@@ -62,7 +75,7 @@ describe('openEncryptedDatabase (spec 008, rules 1-3)', () => {
     const { db } = fakeDatabase({ cipher: false });
     await expect(open(db)).rejects.toBeInstanceOf(DatabaseNotEncryptedError);
     expect(db.closeAsync).toHaveBeenCalled();
-    expect(db.withExclusiveTransactionAsync).not.toHaveBeenCalled();
+    expect(db.withTransactionAsync).not.toHaveBeenCalled();
   });
 
   it('never puts the key in the error', async () => {
@@ -83,6 +96,12 @@ describe('openEncryptedDatabase (spec 008, rules 1-3)', () => {
     expect(result.schemaVersion).toBe(MIGRATIONS.length);
   });
 
+  it('runs the migrations on the keyed connection (a new connection would not have the key)', async () => {
+    const { db } = fakeDatabase();
+    await expect(open(db)).resolves.toMatchObject({ schemaVersion: MIGRATIONS.length });
+    expect(db.withTransactionAsync).toHaveBeenCalledTimes(1);
+  });
+
   it('records the installation once, on the first migration', async () => {
     const { db } = fakeDatabase();
     await open(db);
@@ -95,7 +114,7 @@ describe('openEncryptedDatabase (spec 008, rules 1-3)', () => {
   it('skips migrations already applied', async () => {
     const { db } = fakeDatabase({ userVersion: MIGRATIONS.length });
     await open(db);
-    expect(db.withExclusiveTransactionAsync).not.toHaveBeenCalled();
+    expect(db.withTransactionAsync).not.toHaveBeenCalled();
   });
 
   it('refuses a database newer than this app (downgrade)', async () => {

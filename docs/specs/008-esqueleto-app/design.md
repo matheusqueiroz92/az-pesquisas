@@ -36,7 +36,8 @@ O app é um processo só: o single-flight é uma promessa em memória (no painel
 1. `getOrCreateDatabaseKey()`: 32 bytes de `expo-crypto`, em hex, no SecureStore com `WHEN_UNLOCKED_THIS_DEVICE_ONLY`.
 2. `openDatabaseAsync('az-pesquisas.db')` → `PRAGMA key = "x'<hex>'"` (chave bruta, sem PBKDF2: já tem entropia total) como **primeiro** comando.
 3. `PRAGMA cipher_version`: vazio → fecha e lança `DATABASE_NOT_ENCRYPTED` (falha fechada).
-4. `PRAGMA journal_mode = WAL`; migrações por `user_version` dentro de `withExclusiveTransactionAsync`.
+4. `PRAGMA journal_mode = WAL`; migrações por `user_version` dentro de `withTransactionAsync`, **na mesma conexão**. O `withExclusiveTransactionAsync` abre uma conexão nova, sem a chave, e não consegue ler o arquivo criptografado (achado no primeiro teste no emulador).
+5. Se a abertura falhar, a tela de erro mostra o nome e a mensagem técnica do erro (sem a chave) para o suporte.
 
 A ordem e a falha fechada são testadas com um banco falso (a porta `SqlDatabase`), porque o SQLCipher só existe no aparelho. Drizzle entra junto com as primeiras tabelas de verdade (F1).
 

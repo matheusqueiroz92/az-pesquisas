@@ -7,7 +7,7 @@ import { openAppDatabase, sessionService } from './services';
 
 export type AppState =
   | { readonly status: 'loading' }
-  | { readonly status: 'database-error' }
+  | { readonly status: 'database-error'; readonly detail: string }
   | { readonly status: 'signed-out'; readonly cipherVersion: string }
   | { readonly status: 'signed-in'; readonly cipherVersion: string; readonly session: Session };
 
@@ -42,9 +42,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
             ? { status: 'signed-in', cipherVersion: opened.cipherVersion, session }
             : { status: 'signed-out', cipherVersion: opened.cipherVersion },
         );
-      } catch {
+      } catch (error: unknown) {
+        // The message never carries the key (encrypted-database.ts); it helps support.
+        const detail = error instanceof Error ? `${error.name}: ${error.message}` : 'Unknown error';
+        if (__DEV__) {
+          // eslint-disable-next-line no-console -- dev only: shows in the Metro terminal; never the key.
+          console.error('[az] local database failed to open', detail);
+        }
         if (!cancelled) {
-          setState({ status: 'database-error' });
+          setState({ status: 'database-error', detail });
         }
       }
     };

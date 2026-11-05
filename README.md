@@ -55,7 +55,8 @@ O app usa banco criptografado (SQLCipher), que não roda no Expo Go: ele é inst
    - `ANDROID_HOME` = `%LOCALAPPDATA%\Android\Sdk`
    - `JAVA_HOME` = `C:\Program Files\Android\Android Studio\jbr`
    - Acrescente ao `Path`: `%ANDROID_HOME%\platform-tools` e `%ANDROID_HOME%\emulator`
-5. Se o build reclamar de caminho longo ("Filename longer than 260 characters"), ative caminhos longos no Windows (PowerShell como administrador): `New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force` e reinicie.
+5. Os terminais do VS Code/Cursor só enxergam variáveis novas depois que o editor é fechado e aberto de novo.
+6. Se o build reclamar de caminho longo ("Filename longer than 260 characters"), ative caminhos longos no Windows (PowerShell como administrador): `New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force` e reinicie.
 
 **Para rodar:**
 
@@ -64,6 +65,13 @@ O app usa banco criptografado (SQLCipher), que não roda no Expo Go: ele é inst
 pnpm build
 cp apps/mobile/.env.example apps/mobile/.env
 pnpm --filter @az-pesquisas/mobile android   # 1ª vez compila o app nativo (demora); instala e abre
+```
+
+Se o build nativo falhar com `build.ninja still dirty after 100 tries` (ou outro erro de CMake/Ninja), apague as pastas geradas e tente de novo:
+
+```powershell
+Remove-Item -Recurse -Force apps/mobile/android
+pnpm --filter @az-pesquisas/mobile android
 ```
 
 Nas vezes seguintes, com o app já instalado: `pnpm --filter @az-pesquisas/mobile start` e abra o app no emulador. Mudou algo nativo (`app.config.ts`, módulo novo)? Rode `android` de novo.

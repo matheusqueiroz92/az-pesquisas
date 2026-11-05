@@ -42,6 +42,36 @@ pnpm --filter @az-pesquisas/web dev
 
 O link de "esqueci a senha" não sai por e-mail no ambiente local: ele fica num arquivo `.txt` em `apps/api/.mail/`.
 
+## Rodar o app de campo no Android (Android Studio)
+
+O app usa banco criptografado (SQLCipher), que não roda no Expo Go: ele é instalado como _development build_.
+
+**Uma vez só, no Windows:**
+
+1. Instale o [Android Studio](https://developer.android.com/studio). No primeiro assistente, aceite o SDK padrão.
+2. Em _More Actions › SDK Manager_, confirme: _Android SDK Platform_ mais recente, _Android SDK Build-Tools_ e _Android SDK Platform-Tools_.
+3. Em _More Actions › Virtual Device Manager_, crie um emulador (sugestão: _Pixel Tablet_, que lembra os tablets de campo).
+4. Variáveis de ambiente do usuário (Painel de Controle › Variáveis de ambiente):
+   - `ANDROID_HOME` = `%LOCALAPPDATA%\Android\Sdk`
+   - `JAVA_HOME` = `C:\Program Files\Android\Android Studio\jbr`
+   - Acrescente ao `Path`: `%ANDROID_HOME%\platform-tools` e `%ANDROID_HOME%\emulator`
+5. Se o build reclamar de caminho longo ("Filename longer than 260 characters"), ative caminhos longos no Windows (PowerShell como administrador): `New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force` e reinicie.
+
+**Para rodar:**
+
+```powershell
+# com a API no ar (seção "Rodar a API localmente") e o emulador aberto
+pnpm build
+cp apps/mobile/.env.example apps/mobile/.env
+pnpm --filter @az-pesquisas/mobile android   # 1ª vez compila o app nativo (demora); instala e abre
+```
+
+Nas vezes seguintes, com o app já instalado: `pnpm --filter @az-pesquisas/mobile start` e abra o app no emulador. Mudou algo nativo (`app.config.ts`, módulo novo)? Rode `android` de novo.
+
+Entre com um usuário de papel **Pesquisador** ou **Coordenador** criado no painel.
+
+**Tablet ou celular por cabo USB:** ative _Opções do desenvolvedor › Depuração USB_, conecte, rode `adb reverse tcp:3000 tcp:3000` e troque no `apps/mobile/.env` para `EXPO_PUBLIC_API_URL=http://localhost:3000`.
+
 ## Testes de ponta a ponta (painel)
 
 Usam a API e o painel de verdade, num banco descartável (`az_e2e`) no mesmo Postgres do `db:up`.

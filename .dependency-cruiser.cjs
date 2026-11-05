@@ -79,6 +79,27 @@ module.exports = {
       to: { path: '^apps/web/src/server/' },
     },
     {
+      name: 'mobile-domain-and-application-are-framework-free',
+      severity: 'error',
+      comment:
+        'App: domain/ and application/ run in tests on Node and must not touch React, Expo or infrastructure (spec 008, rule 15).',
+      from: { path: '^apps/mobile/src/(domain|application)/', pathNot: '\\.test\\.ts$' },
+      to: {
+        path: [
+          '(^|/)node_modules/(react|react-native|expo|expo-[^/]+|@expo/[^/]+)(/|$)',
+          '^apps/mobile/src/(infrastructure|ui|app)/',
+        ],
+      },
+    },
+    {
+      name: 'mobile-screens-only-meet-infrastructure-in-services',
+      severity: 'error',
+      comment:
+        'App: screens use the use cases; only ui/services.ts (the composition root) wires infrastructure.',
+      from: { path: '^apps/mobile/src/(ui|app)/', pathNot: '^apps/mobile/src/ui/services\\.ts$' },
+      to: { path: '^apps/mobile/src/infrastructure/', dependencyTypesNot: ['type-only'] },
+    },
+    {
       name: 'not-to-unresolvable',
       severity: 'error',
       from: {},

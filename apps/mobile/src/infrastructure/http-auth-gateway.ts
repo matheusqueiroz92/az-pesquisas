@@ -23,10 +23,10 @@ const codeOf = async (response: Response): Promise<string | undefined> => {
 };
 
 /** Talks to the API's /v1/auth routes. Bodies are validated with the shared contracts. */
-export const createHttpAuthGateway = (deps: {
-  apiUrl: string;
-  fetch: typeof fetch;
-}): AuthGateway => {
+/** Only what we use of fetch: a string URL and init. */
+export type FetchLike = (url: string, init: RequestInit) => Promise<Response>;
+
+export const createHttpAuthGateway = (deps: { apiUrl: string; fetch: FetchLike }): AuthGateway => {
   const base = deps.apiUrl.replace(/\/+$/, '');
 
   const post = async (path: string, body: unknown): Promise<Result<Response, GatewayError>> => {

@@ -15,7 +15,7 @@ export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://10.0.2.2:3000'
 export const APP_VERSION = Constants.expoConfig?.version ?? '0.0.0';
 
 export const sessionService = createSessionService({
-  gateway: createHttpAuthGateway({ apiUrl: API_URL, fetch: (input, init) => fetch(input, init) }),
+  gateway: createHttpAuthGateway({ apiUrl: API_URL, fetch: (url, init) => fetch(url, init) }),
   store: createSecureSessionStore(expoSecureKeyValue),
   clock: { now: () => Date.now() },
 });

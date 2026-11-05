@@ -2,6 +2,7 @@ import { err, ok } from '@az-pesquisas/core';
 import { describe, expect, it, vi } from 'vitest';
 
 import { createHttpAuthGateway } from './http-auth-gateway';
+import type { FetchLike } from './http-auth-gateway';
 
 const TOKENS = {
   accessToken: 'at',
@@ -24,7 +25,7 @@ const json = (status: number, body?: unknown) =>
   });
 
 const gatewayWith = (response: Response | Error) => {
-  const fetchFn = vi.fn<typeof fetch>();
+  const fetchFn = vi.fn<FetchLike>();
   if (response instanceof Error) {
     fetchFn.mockRejectedValue(response);
   } else {
@@ -97,7 +98,7 @@ describe('HttpAuthGateway', () => {
   });
 
   it('accepts an API URL with a trailing slash', async () => {
-    const fetchFn = vi.fn<typeof fetch>().mockResolvedValue(json(200, TOKENS));
+    const fetchFn = vi.fn<FetchLike>().mockResolvedValue(json(200, TOKENS));
     await createHttpAuthGateway({ apiUrl: 'https://api.az.test/', fetch: fetchFn }).login(
       'a@b.co',
       'x',

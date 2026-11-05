@@ -41,4 +41,3 @@ next-env.d.ts
 apps/mobile/android/
 apps/mobile/ios/
 apps/mobile/dist-export/
-apps/mobile/expo-env.d.ts

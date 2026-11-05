@@ -1,0 +1,52 @@
+/** Every text of the field app (ADR-0001: interface in pt-BR). */
+export const t = {
+  app: { name: 'AZ Pesquisas', byline: 'Um produto AZ Work Center' },
+  signIn: {
+    title: 'Entrar',
+    intro: 'Use o e-mail e a senha que o coordenador cadastrou para você.',
+    email: 'E-mail',
+    password: 'Senha',
+    submit: 'Entrar',
+    submitting: 'Entrando…',
+    lockoutHint: 'Se você errou a senha várias vezes, aguarde 15 minutos antes de tentar de novo.',
+    server: 'Servidor',
+  },
+  errors: {
+    invalidCredentials: 'E-mail ou senha incorretos.',
+    rateLimited: 'Muitas tentativas. Aguarde um minuto e tente de novo.',
+    offline: 'Sem conexão com o servidor. O primeiro acesso precisa de internet.',
+    server: 'O servidor não respondeu como esperado. Tente de novo em instantes.',
+    roleNotAllowed:
+      'Este aplicativo é para pesquisadores e coordenadores. Use o painel web para o seu perfil.',
+    generic: 'Algo deu errado. Tente de novo.',
+  },
+  surveys: {
+    title: 'Pesquisas',
+    emptyTitle: 'Nenhuma pesquisa no aparelho',
+    emptyBody: 'As pesquisas aparecem aqui depois da sincronização com o painel.',
+  },
+  account: {
+    title: 'Conta',
+    name: 'Nome',
+    email: 'E-mail',
+    role: 'Papel',
+    device: 'Este aparelho',
+    server: 'Servidor',
+    version: 'Versão do app',
+    database: 'Banco local',
+    encrypted: (cipher: string) => `Criptografado (SQLCipher ${cipher})`,
+    signOut: 'Sair',
+    signOutHint: 'As entrevistas guardadas continuam no aparelho, criptografadas.',
+  },
+  roles: {
+    admin: 'Administrador',
+    coordinator: 'Coordenador',
+    analyst: 'Analista',
+    client: 'Cliente',
+    interviewer: 'Pesquisador',
+  },
+  databaseError: {
+    title: 'Não é seguro continuar',
+    body: 'Este aparelho não conseguiu abrir o banco local criptografado. Nenhum dado foi gravado. Avise o coordenador.',
+  },
+} as const;

@@ -138,6 +138,15 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - Status (sucesso, aviso, erro) sempre com ícone ou texto, nunca só cor. Alvo de toque mínimo de 44 px (`h-touch`).
 - Gráficos (F1): cores `chart-1` a `chart-8` em ordem fixa, cinza `chart-other` para "Não sabe / Outros". Nono item vira "Outros".
 
+## App de campo (spec 008)
+
+- Rotas do expo-router em `apps/mobile/src/app/` são finas: só exportam telas de `src/ui/screens`.
+- `domain/` e `application/` não importam React, Expo nem `infrastructure/` (depcruise). Telas só chegam à infraestrutura por `src/ui/services.ts`.
+- Tokens só no SecureStore. Dados do campo só no SQLite criptografado; o banco **falha fechado** sem SQLCipher. Nunca grave nada fora dele.
+- A sessão sobrevive offline; só uma recusa explícita da API (400/401 na renovação) encerra. Renovação só por `sessionService.getAccessToken()`.
+- Mudou o esquema local? Nova função em `src/infrastructure/migrations.ts`, nunca edite uma aplicada (aparelhos em campo já rodaram).
+- Imports no app sem extensão (resolução do Metro), como no painel.
+
 ## Contratos com o app (spec 006)
 
 - Questionário, entrevista e sincronização estão em `packages/contracts` (`questionnaire.ts`, `interview.ts`, `sync.ts`, `azp.ts`).
@@ -160,5 +169,6 @@ pnpm seed:admin       # cria a primeira organização e o admin (variáveis SEED
 pnpm test             # testes de todos os pacotes
 pnpm depcruise        # só as regras de arquitetura
 pnpm test:e2e         # ponta a ponta do painel (depois de pnpm build)
+pnpm --filter @az-pesquisas/mobile android   # app no emulador (Android Studio)
 pnpm --filter @az-pesquisas/core test:coverage
 ```

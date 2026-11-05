@@ -35,7 +35,7 @@ function RootNavigator() {
     return null;
   }
   if (state.status === 'database-error') {
-    return <DatabaseErrorScreen />;
+    return <DatabaseErrorScreen detail={state.detail} />;
   }
   const signedIn = state.status === 'signed-in';
   return (

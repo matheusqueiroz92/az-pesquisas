@@ -24,7 +24,7 @@ const HEX_KEY = /^[0-9a-f]{64}$/;
  * 1. `PRAGMA key` with the raw 256-bit key, before anything else;
  * 2. `PRAGMA cipher_version`: empty means plain SQLite, so close and fail (a build
  *    without SQLCipher silently ignores the key and would write plaintext);
- * 3. WAL, then pending migrations in one exclusive transaction.
+ * 3. WAL, then pending migrations in one transaction on this same (keyed) connection.
  */
 export const openEncryptedDatabase = async <D extends SqlDatabase>(
   deps: {
@@ -52,11 +52,11 @@ export const openEncryptedDatabase = async <D extends SqlDatabase>(
     throw new Error(`Local database is newer (v${current}) than this app (v${MIGRATIONS.length})`);
   }
   if (current < MIGRATIONS.length) {
-    await db.withExclusiveTransactionAsync(async (txn) => {
+    await db.withTransactionAsync(async () => {
       for (const migrate of MIGRATIONS.slice(current)) {
-        await migrate(txn, deps);
+        await migrate(db, deps);
       }
-      await txn.execAsync(`PRAGMA user_version = ${MIGRATIONS.length}`);
+      await db.execAsync(`PRAGMA user_version = ${MIGRATIONS.length}`);
     });
   }
   return { db, cipherVersion: cipher.cipher_version, schemaVersion: MIGRATIONS.length };

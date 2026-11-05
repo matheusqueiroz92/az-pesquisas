@@ -5,12 +5,15 @@ import { t } from '../i18n';
 import { colors, fonts, space } from '../theme';
 
 /** Rule 2: without SQLCipher the app stops here and stores nothing. */
-export function DatabaseErrorScreen() {
+export function DatabaseErrorScreen({ detail }: { detail: string }) {
   return (
     <View style={styles.root} accessibilityRole="alert">
       <LockIcon color={colors.errorForeground} size={36} />
       <Text style={styles.title}>{t.databaseError.title}</Text>
       <Text style={styles.body}>{t.databaseError.body}</Text>
+      <Text selectable style={styles.detail}>
+        {detail}
+      </Text>
     </View>
   );
 }
@@ -29,6 +32,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: colors.foreground,
     textAlign: 'center',
+  },
+  detail: {
+    fontFamily: fonts.mono,
+    fontSize: 12,
+    color: colors.mutedForeground,
+    textAlign: 'center',
+    maxWidth: 420,
   },
   body: {
     fontFamily: fonts.regular,

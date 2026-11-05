@@ -130,6 +130,14 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - Todo texto de tela fica em `src/i18n/pt-BR.ts`; código de erro novo da API ganha tradução lá (o teste reprova se faltar).
 - Menu e telas usam `can()` de `packages/contracts`; a API recusa de qualquer forma.
 
+## Design system (spec 012)
+
+- Fonte única: `packages/design-tokens` (`src/tokens.ts` para o app, `theme.css` para o Tailwind; um teste mantém os dois iguais). Mudou uma cor? Mude nos dois.
+- Use só tokens semânticos (`bg-surface`, `text-muted-foreground`, `bg-primary`, `border-border`). A paleta padrão do Tailwind foi removida e um teste reprova `slate-500`, `red-600` etc. e hex solto em `.tsx`.
+- Vermelho AZ é pulso: ação principal, item ativo, foco. Não pinte áreas grandes de vermelho.
+- Status (sucesso, aviso, erro) sempre com ícone ou texto, nunca só cor. Alvo de toque mínimo de 44 px (`h-touch`).
+- Gráficos (F1): cores `chart-1` a `chart-8` em ordem fixa, cinza `chart-other` para "Não sabe / Outros". Nono item vira "Outros".
+
 ## Contratos com o app (spec 006)
 
 - Questionário, entrevista e sincronização estão em `packages/contracts` (`questionnaire.ts`, `interview.ts`, `sync.ts`, `azp.ts`).

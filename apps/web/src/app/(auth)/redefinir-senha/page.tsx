@@ -15,9 +15,12 @@ export default async function ResetPasswordPage({
   const { token } = await searchParams;
   if (typeof token !== 'string' || token.length === 0) {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         <Alert tone="error">{t.reset.missingToken}</Alert>
-        <Link href="/esqueci-senha" className="text-sm text-brand-700 underline">
+        <Link
+          href="/esqueci-senha"
+          className="self-start text-sm font-semibold text-link underline decoration-1 underline-offset-4 hover:decoration-2"
+        >
           {t.login.forgot}
         </Link>
       </div>

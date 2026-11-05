@@ -2,6 +2,7 @@
 
 import { ROLES, USER_STATUSES } from '@az-pesquisas/contracts';
 import type { UserView } from '@az-pesquisas/contracts';
+import { Pencil, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { SubmitEvent } from 'react';
@@ -71,6 +72,7 @@ export function NewUserButton() {
           setOpen(true);
         }}
       >
+        <Plus aria-hidden />
         {t.users.new}
       </Button>
       <Dialog
@@ -80,7 +82,7 @@ export function NewUserButton() {
           setOpen(false);
         }}
       >
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+        <form onSubmit={onSubmit} className="flex flex-col gap-5">
           {error ? <Alert tone="error">{error.message}</Alert> : null}
           <TextField
             label={t.users.name}
@@ -150,14 +152,15 @@ export function EditUserButton({ user, isSelf }: { user: UserView; isSelf: boole
   return (
     <>
       <Button
-        variant="secondary"
-        className="h-8 px-3"
+        variant="ghost"
+        size="sm"
         onClick={() => {
           setOpen(true);
         }}
         aria-label={`${t.users.edit} ${user.name}`}
       >
-        {t.users.edit}
+        <Pencil aria-hidden />
+        <span className="hidden md:inline">{t.users.edit}</span>
       </Button>
       <Dialog
         open={open}
@@ -166,7 +169,7 @@ export function EditUserButton({ user, isSelf }: { user: UserView; isSelf: boole
           setOpen(false);
         }}
       >
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+        <form onSubmit={onSubmit} className="flex flex-col gap-5">
           {error ? <Alert tone="error">{error.message}</Alert> : null}
           <TextField
             label={t.users.name}
@@ -204,7 +207,7 @@ export function EditUserButton({ user, isSelf }: { user: UserView; isSelf: boole
 
 function DialogActions({ pending, onCancel }: { pending: boolean; onCancel: () => void }) {
   return (
-    <div className="mt-2 flex justify-end gap-2">
+    <div className="-mx-6 mt-2 -mb-5 flex justify-end gap-2 border-t border-border bg-surface-sunken/50 px-6 py-4">
       <Button variant="secondary" onClick={onCancel}>
         {t.users.cancel}
       </Button>

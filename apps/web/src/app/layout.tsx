@@ -2,6 +2,11 @@ import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import type { ReactNode } from 'react';
 
+import '@fontsource-variable/manrope';
+import '@fontsource-variable/newsreader';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+
 import { t } from '@/i18n/pt-BR';
 
 import './globals.css';
@@ -16,7 +21,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   await connection();
   return (
     <html lang="pt-BR">
-      <body className="min-h-dvh font-sans">{children}</body>
+      <body className="min-h-dvh">{children}</body>
     </html>
   );
 }

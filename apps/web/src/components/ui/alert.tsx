@@ -1,20 +1,24 @@
+import { CircleAlert, CircleCheck, Info } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/cn';
 
 const TONES = {
-  error: 'border-red-200 bg-red-50 text-red-800',
-  success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
-  info: 'border-slate-200 bg-white text-slate-700',
+  error: { box: 'bg-error-soft text-error-foreground border-error/25', Icon: CircleAlert },
+  success: { box: 'bg-success-soft text-success-foreground border-success/25', Icon: CircleCheck },
+  info: { box: 'bg-info-soft text-foreground border-info/20', Icon: Info },
 } as const;
 
+/** Status is never color alone: every tone carries an icon (spec 012). */
 export function Alert({ tone, children }: { tone: keyof typeof TONES; children: ReactNode }) {
+  const { box, Icon } = TONES[tone];
   return (
     <div
       role={tone === 'error' ? 'alert' : 'status'}
-      className={cn('rounded-md border px-3 py-2 text-sm', TONES[tone])}
+      className={cn('flex gap-2.5 rounded-sm border px-3.5 py-3 text-sm', box)}
     >
-      {children}
+      <Icon aria-hidden className="mt-0.5 size-4 shrink-0" />
+      <div className="min-w-0">{children}</div>
     </div>
   );
 }

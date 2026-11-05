@@ -38,10 +38,13 @@ export function LoginForm() {
       onSubmit={(event) => {
         void onSubmit(event);
       }}
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-5"
       noValidate={false}
     >
-      <h1 className="text-lg font-semibold">{t.login.title}</h1>
+      <div className="mb-2">
+        <h1 className="text-3xl font-extrabold tracking-tight">{t.login.title}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t.login.subtitle}</p>
+      </div>
       {error ? (
         <Alert tone="error">
           <p>{error}</p>
@@ -56,10 +59,13 @@ export function LoginForm() {
         autoComplete="current-password"
         required
       />
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" disabled={pending} className="mt-1 w-full">
         {pending ? t.login.submitting : t.login.submit}
       </Button>
-      <Link href="/esqueci-senha" className="text-center text-sm text-brand-700 underline">
+      <Link
+        href="/esqueci-senha"
+        className="self-start text-sm font-semibold text-link underline decoration-1 underline-offset-4 hover:decoration-2"
+      >
         {t.login.forgot}
       </Link>
     </form>

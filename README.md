@@ -74,6 +74,8 @@ Remove-Item -Recurse -Force apps/mobile/android
 pnpm --filter @az-pesquisas/mobile android
 ```
 
+Se aparecer `ninja: error: mkdir(...): No such file or directory`, o caminho ficou longo demais para o Windows. Mova o repositório para uma pasta curta (por exemplo `C:\dev\az-pesquisas`), apague `node_modules` e `apps\mobile\android` e rode `pnpm install` de novo.
+
 Nas vezes seguintes, com o app já instalado: `pnpm --filter @az-pesquisas/mobile start` e abra o app no emulador. Mudou algo nativo (`app.config.ts`, módulo novo)? Rode `android` de novo.
 
 Entre com um usuário de papel **Pesquisador** ou **Coordenador** criado no painel.

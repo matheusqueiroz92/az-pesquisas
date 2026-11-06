@@ -6,9 +6,10 @@ module.exports = {
     {
       name: 'no-circular',
       severity: 'error',
-      comment: 'Circular dependencies hide design problems and break module boundaries.',
+      comment:
+        'Circular dependencies hide design problems and break module boundaries. A cycle closed only by `import type` does not exist at runtime and is allowed (e.g. a context directory -> transaction context -> Database type -> schema).',
       from: {},
-      to: { circular: true },
+      to: { circular: true, viaOnly: { dependencyTypesNot: ['type-only'] } },
     },
     {
       name: 'domain-and-application-are-framework-free',

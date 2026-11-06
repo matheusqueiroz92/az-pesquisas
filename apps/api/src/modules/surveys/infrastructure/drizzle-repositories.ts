@@ -2,10 +2,15 @@ import { count, eq, isNotNull } from 'drizzle-orm';
 
 import { currentTx } from '../../../shared/database/transaction-context.js';
 import { Client } from '../domain/client.js';
-import type { ClientRepository, SurveyRepository } from '../domain/repositories.js';
+import { Questionnaire } from '../domain/questionnaire.js';
+import type {
+  ClientRepository,
+  QuestionnaireRepository,
+  SurveyRepository,
+} from '../domain/repositories.js';
 import { Survey } from '../domain/survey.js';
 import type { SurveySnapshot } from '../domain/survey.js';
-import { clients, surveys } from './schema.js';
+import { clients, questionnaireDrafts, surveys } from './schema.js';
 
 // Every query below runs in the tenant transaction (RLS on): no organization
 // filter is needed here for isolation, and none could bypass it.
@@ -124,5 +129,31 @@ export const drizzleSurveyRepository: SurveyRepository = {
       .where(isNotNull(surveys.clientId))
       .groupBy(surveys.clientId);
     return new Map(rows.flatMap((row) => (row.clientId ? [[row.clientId, row.total]] : [])));
+  },
+};
+
+export const drizzleQuestionnaireRepository: QuestionnaireRepository = {
+  find: async (surveyId) => {
+    const [row] = await currentTx()
+      .select()
+      .from(questionnaireDrafts)
+      .where(eq(questionnaireDrafts.surveyId, surveyId));
+    return row ? Questionnaire.fromSnapshot(row) : undefined;
+  },
+  save: async (questionnaire) => {
+    const row = questionnaire.toSnapshot();
+    const values = { ...row, updatedAt: row.updatedAt ?? new Date() };
+    await currentTx()
+      .insert(questionnaireDrafts)
+      .values(values)
+      .onConflictDoUpdate({
+        target: questionnaireDrafts.surveyId,
+        set: {
+          content: values.content,
+          revision: values.revision,
+          updatedAt: values.updatedAt,
+          updatedBy: values.updatedBy,
+        },
+      });
   },
 };

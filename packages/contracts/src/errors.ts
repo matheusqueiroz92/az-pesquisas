@@ -32,5 +32,8 @@ export const ERROR_CODES = [
   'CLIENT_IN_USE',
   'SURVEY_NOT_FOUND',
   'SURVEY_NOT_EDITABLE',
+  // Questionnaire (spec 014)
+  'QUESTIONNAIRE_CONFLICT',
+  'QUESTIONNAIRE_LOCKED',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];

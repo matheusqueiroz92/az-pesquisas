@@ -157,6 +157,14 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - Municípios: `MUNICIPALITIES` em `packages/contracts/src/municipalities.ts` (todos do Brasil, código IBGE; a UF são os dois primeiros dígitos). Os dados ficam em `municipalities-data.ts`, gerado; não edite à mão. O painel começa na Bahia (`HOME_UF`).
 - Valores em dinheiro em centavos inteiros (`bigint` no banco), nunca ponto flutuante.
 
+## Questionário (spec 014)
+
+- Rascunho = um documento JSONB por pesquisa (`questionnaire_drafts`, ADR-0014), salvo inteiro com `revision` (conflito → `QUESTIONNAIRE_CONFLICT`). Nunca edite pergunta por pergunta no banco.
+- Formato e regras moram em `packages/contracts/src/questionnaire-draft.ts`: `QuestionnaireDraft` (estrutura, aceita incompleto), `lintQuestionnaire` (pendências para publicar) e, como regra final, o `QuestionnaireSnapshot` da spec 006. Garantia testada: sem pendências ⇒ snapshot válido. Regra nova de pergunta entra no snapshot **e** no lint.
+- Ids de pergunta, opção e linha são estáveis: mudar texto, código ou ordem nunca troca o id. Ids novos só ao criar ou duplicar (UUID v7).
+- Condições citam o **código** da pergunta; renomear o código propaga (`renameInCondition`).
+- No painel, toda edição passa pelo reducer puro `src/lib/questionnaire-editor.ts` (testado); os componentes só despacham ações.
+
 ## Contratos com o app (spec 006)
 
 - Questionário, entrevista e sincronização estão em `packages/contracts` (`questionnaire.ts`, `interview.ts`, `sync.ts`, `azp.ts`).

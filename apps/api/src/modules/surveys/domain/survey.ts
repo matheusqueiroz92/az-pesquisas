@@ -6,6 +6,7 @@ import {
   MAX_TARGET_INTERVIEWS,
 } from '@az-pesquisas/contracts';
 import type {
+  QuestionnaireLock,
   SurveySettingsInput,
   SurveyStatus,
   SurveyTse,
@@ -183,6 +184,17 @@ export class Survey {
     }
     this.state = { ...this.state, status: 'draft', updatedAt: now };
     return ok(undefined);
+  }
+
+  /**
+   * Why the questionnaire cannot be edited, or null (spec 014 rules 13–14): an
+   * archived survey, or an electoral one already registered at the TSE.
+   */
+  questionnaireLock(): QuestionnaireLock | null {
+    if (this.state.status === 'archived') {
+      return 'archived';
+    }
+    return this.state.tse?.registrationNumber ? 'tse_registered' : null;
   }
 
   /** Nothing from the field is ever deleted: only a draft can go (spec 013 rule 8). */

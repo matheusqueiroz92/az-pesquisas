@@ -1,4 +1,5 @@
 import type { Client } from './client.js';
+import type { Questionnaire } from './questionnaire.js';
 import type { Survey } from './survey.js';
 
 /**
@@ -21,4 +22,11 @@ export interface SurveyRepository {
   remove(id: string): Promise<void>;
   /** Number of surveys (any status) per client id. */
   countByClient(): Promise<ReadonlyMap<string, number>>;
+}
+
+export interface QuestionnaireRepository {
+  /** The draft of a survey; undefined when it was never saved. */
+  find(surveyId: string): Promise<Questionnaire | undefined>;
+  /** Inserts or replaces the draft of its survey. */
+  save(questionnaire: Questionnaire): Promise<void>;
 }

@@ -50,6 +50,20 @@
       "when": 1793970346795,
       "tag": "0006_surveys_municipalities_brazil",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793971770605,
+      "tag": "0007_questionnaire_drafts",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793971779290,
+      "tag": "0008_questionnaire_drafts_security",
+      "breakpoints": true
     }
   ]
 }

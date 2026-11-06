@@ -1,3 +1,4 @@
+import type { QuestionnaireDraft } from '@az-pesquisas/contracts';
 import {
   bigint,
   boolean,
@@ -5,6 +6,7 @@ import {
   foreignKey,
   index,
   integer,
+  jsonb,
   pgTable,
   text,
   timestamp,
@@ -81,5 +83,31 @@ export const surveys = pgTable(
     }),
     index('surveys_organization_id_idx').on(t.organizationId),
     index('surveys_client_id_idx').on(t.clientId),
+    // Target of composite FKs from tables that belong to a survey (questionnaire_drafts).
+    unique('surveys_organization_id_id_unique').on(t.organizationId, t.id),
+  ],
+);
+
+/**
+ * The questionnaire draft of a survey (spec 014): one JSON document saved whole
+ * (ADR-0014). Published versions are immutable snapshots (spec 015).
+ */
+export const questionnaireDrafts = pgTable(
+  'questionnaire_drafts',
+  {
+    surveyId: uuid('survey_id').primaryKey(),
+    organizationId: organizationId(),
+    content: jsonb('content').$type<QuestionnaireDraft>().notNull(),
+    revision: integer('revision').notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
+    /** Who saved last (a user id; no FK: users are another context). */
+    updatedBy: uuid('updated_by'),
+  },
+  (t) => [
+    foreignKey({
+      name: 'questionnaire_drafts_survey_fk',
+      columns: [t.organizationId, t.surveyId],
+      foreignColumns: [surveys.organizationId, surveys.id],
+    }).onDelete('cascade'),
   ],
 );

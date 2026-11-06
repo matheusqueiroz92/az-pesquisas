@@ -113,6 +113,8 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - Acesso a tabela de negócio só dentro de `database.withTenantTransaction()`, que exige `runWithTenant()` em volta e liga o RLS da organização.
 - Toda tabela nova com dados de organização precisa de `organization_id` (FK para `organizations`), `ENABLE ROW LEVEL SECURITY` e a política `tenant_isolation`, numa migração SQL própria. O teste `rls-coverage.db.test.ts` reprova o build se faltar.
 - Mudou um `schema.ts`? `pnpm db:generate`, revise o SQL gerado e faça o commit da migração junto.
+- Referência entre tabelas de organização usa FK composta `(organization_id, x_id)` → `(organization_id, id)`: o Postgres confere FK comum sem RLS, e a composta impede apontar para linha de outra organização (ex.: `surveys_client_fk`, spec 013).
+- Log de auditoria: `shared/audit` (`drizzleAuditLog`), mesma tabela para todos os contextos. Cada contexto declara as ações que grava no seu `application/ports.ts`; `metadata` leva nomes de campos e ids, nunca valores digitados.
 
 ## Autenticação e permissões
 
@@ -146,6 +148,14 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - A sessão sobrevive offline; só uma recusa explícita da API (400/401 na renovação) encerra. Renovação só por `sessionService.getAccessToken()`.
 - Mudou o esquema local? Nova função em `src/infrastructure/migrations.ts`, nunca edite uma aplicada (aparelhos em campo já rodaram).
 - Imports no app sem extensão (resolução do Metro), como no painel.
+
+## Clientes e pesquisas (spec 013)
+
+- Contexto `surveys` (`apps/api/src/modules/surveys`): clientes e pesquisas; o questionário (014) entra no mesmo contexto.
+- Situações da pesquisa: por enquanto só `draft` ⇄ `archived`. Só rascunho é editado ou excluído; "em campo" e "encerrada" chegam com publicação e atribuição (015/016), que ampliam essas regras.
+- Dados do TSE só existem em pesquisa eleitoral marcada como registrada (`tse` não nulo); o domínio apaga e o banco recusa nos outros casos.
+- Municípios: `BAHIA_MUNICIPALITIES` em `packages/contracts/src/municipalities-ba.ts` (417, código IBGE). A lista é gerada; não edite à mão.
+- Valores em dinheiro em centavos inteiros (`bigint` no banco), nunca ponto flutuante.
 
 ## Contratos com o app (spec 006)
 

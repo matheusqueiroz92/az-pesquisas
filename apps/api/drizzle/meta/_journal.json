@@ -29,6 +29,20 @@
       "when": 1793808769821,
       "tag": "0003_identity_security",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793925637331,
+      "tag": "0004_surveys",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793925651822,
+      "tag": "0005_surveys_security",
+      "breakpoints": true
     }
   ]
 }

@@ -27,5 +27,10 @@ export const ERROR_CODES = [
   'USER_NOT_FOUND',
   'CANNOT_DISABLE_SELF',
   'CANNOT_DEMOTE_SELF',
+  // Surveys (spec 013)
+  'CLIENT_NOT_FOUND',
+  'CLIENT_IN_USE',
+  'SURVEY_NOT_FOUND',
+  'SURVEY_NOT_EDITABLE',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];

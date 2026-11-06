@@ -3,7 +3,6 @@
 import { ROLES, USER_STATUSES } from '@az-pesquisas/contracts';
 import type { UserView } from '@az-pesquisas/contracts';
 import { Pencil, Plus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { SubmitEvent } from 'react';
 
@@ -11,40 +10,17 @@ import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { SelectField, TextField } from '@/components/ui/field';
-import { errorMessage, t } from '@/i18n/pt-BR';
+import { t } from '@/i18n/pt-BR';
 import { send } from '@/lib/http';
-import type { SendResult } from '@/lib/http';
+
+import { DialogActions } from './dialog-actions';
+import { useSubmit } from './use-submit';
 
 const ROLE_OPTIONS = ROLES.map((role) => ({ value: role, label: t.roles[role] }));
 const STATUS_OPTIONS = USER_STATUSES.map((status) => ({
   value: status,
   label: t.statuses[status],
 }));
-
-/** Shared submit flow: send, refresh the server-rendered list, close. */
-const useSubmit = (onDone: () => void) => {
-  const router = useRouter();
-  const [error, setError] = useState<{ message: string; fields: string[] }>();
-  const [pending, setPending] = useState(false);
-
-  const submit = async (call: () => Promise<SendResult<unknown>>) => {
-    setPending(true);
-    setError(undefined);
-    const result = await call();
-    setPending(false);
-    if (result.ok) {
-      onDone();
-      router.refresh();
-      return;
-    }
-    if (result.status === 401) {
-      window.location.assign('/login');
-      return;
-    }
-    setError({ message: errorMessage(result.code), fields: result.fields });
-  };
-  return { submit, error, pending };
-};
 
 export function NewUserButton() {
   const [open, setOpen] = useState(false);
@@ -202,18 +178,5 @@ export function EditUserButton({ user, isSelf }: { user: UserView; isSelf: boole
         </form>
       </Dialog>
     </>
-  );
-}
-
-function DialogActions({ pending, onCancel }: { pending: boolean; onCancel: () => void }) {
-  return (
-    <div className="-mx-6 mt-2 -mb-5 flex justify-end gap-2 border-t border-border bg-surface-sunken/50 px-6 py-4">
-      <Button variant="secondary" onClick={onCancel}>
-        {t.users.cancel}
-      </Button>
-      <Button type="submit" disabled={pending}>
-        {t.users.save}
-      </Button>
-    </div>
   );
 }

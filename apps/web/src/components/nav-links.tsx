@@ -1,6 +1,6 @@
 'use client';
 
-import { House, UserRound, UsersRound } from 'lucide-react';
+import { Building2, ClipboardList, House, UserRound, UsersRound } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -10,6 +10,8 @@ import type { NavItem } from '@/lib/navigation';
 
 const ICONS: Readonly<Record<string, LucideIcon>> = {
   '/': House,
+  '/pesquisas': ClipboardList,
+  '/clientes': Building2,
   '/usuarios': UsersRound,
   '/minha-conta': UserRound,
 };

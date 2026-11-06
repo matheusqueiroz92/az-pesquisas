@@ -12,6 +12,8 @@ export interface NavItem {
 /** The sidebar. Same permission matrix as the API (packages/contracts). */
 const ITEMS: readonly NavItem[] = [
   { href: '/', label: t.nav.home },
+  { href: '/pesquisas', label: t.nav.surveys, permission: 'surveys.manage' },
+  { href: '/clientes', label: t.nav.clients, permission: 'surveys.manage' },
   { href: '/usuarios', label: t.nav.users, permission: 'users.manage' },
   { href: '/minha-conta', label: t.nav.account },
 ];

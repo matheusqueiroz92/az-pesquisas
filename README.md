@@ -94,6 +94,18 @@ pnpm build
 pnpm test:e2e
 ```
 
+## Integração contínua (GitHub Actions)
+
+Todo PR para a `main` e todo merge rodam `.github/workflows/ci.yml` (spec 009) com quatro verificações: **check** (`pnpm check` com Postgres), **e2e** (ponta a ponta do painel), **mobile-bundle** (bundle Android do app) e **commits** (padrão das mensagens). O resultado aparece no PR, na aba _Checks_.
+
+Verificação vermelha: clique em _Details_ e abra o passo que falhou. No **e2e**, o relatório do Playwright (com rastro de cada teste) fica em _Summary › Artifacts › playwright-report_.
+
+**Proteção da `main` (uma vez, no GitHub):** _Settings › Branches › Add branch ruleset_ (ou _Add rule_) para `main`:
+
+1. _Require a pull request before merging_.
+2. _Require status checks to pass_: adicione `check`, `e2e`, `mobile-bundle` e `commits` (elas só aparecem na lista depois de rodarem uma vez).
+3. _Require branches to be up to date before merging_.
+
 ## Estrutura
 
 | Pasta                    | Conteúdo                                                                            |

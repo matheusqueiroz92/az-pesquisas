@@ -40,11 +40,14 @@ export interface SurveySnapshot extends SurveyFields {
   readonly id: string;
   readonly organizationId: string;
   readonly status: SurveyStatus;
+  /** Latest published questionnaire version; 0 = never published (spec 015). */
+  readonly publishedVersion: number;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 }
 
 export type SurveyStateError = 'SURVEY_NOT_EDITABLE';
+export type SurveyUpdateError = SurveyStateError | 'SURVEY_FIELD_LOCKED';
 
 const FIELDS: readonly SurveyField[] = [
   'title',
@@ -113,6 +116,7 @@ export class Survey {
       id: input.id,
       organizationId: input.organizationId,
       status: 'draft',
+      publishedVersion: 0,
       ...normalize(input.fields),
       createdAt: input.now,
       updatedAt: input.now,
@@ -143,9 +147,16 @@ export class Survey {
     return this.state.clientId;
   }
 
-  /** Only a draft is edited here; what changes after publication is spec 015. */
-  update(changes: SurveyChanges, now: Date): Result<{ changed: SurveyField[] }, SurveyStateError> {
-    if (this.state.status !== 'draft') {
+  get publishedVersion(): number {
+    return this.state.publishedVersion;
+  }
+
+  /**
+   * Anything but an archived survey is edited. After the first publication the
+   * type is fixed, and so is a TSE registration (spec 015 rules 11 and 13).
+   */
+  update(changes: SurveyChanges, now: Date): Result<{ changed: SurveyField[] }, SurveyUpdateError> {
+    if (this.state.status === 'archived') {
       return err('SURVEY_NOT_EDITABLE');
     }
     // Not `??`: null is a real value here (e.g. clientId: null = own survey).
@@ -164,25 +175,63 @@ export class Survey {
       tse: keep('tse'),
     });
     const changed = FIELDS.filter((field) => !sameValue(next[field], this.state[field]));
+    if (this.state.publishedVersion > 0) {
+      const registration = this.state.tse?.registrationNumber;
+      if (
+        changed.includes('type') ||
+        (registration && next.tse?.registrationNumber !== registration)
+      ) {
+        return err('SURVEY_FIELD_LOCKED');
+      }
+    }
     if (changed.length > 0) {
       this.state = { ...this.state, ...next, updatedAt: now };
     }
     return ok({ changed });
   }
 
+  /** Draft and closed surveys are archived (spec 015 rule 12). */
   archive(now: Date): Result<void, SurveyStateError> {
-    if (this.state.status !== 'draft') {
+    return this.move(['draft', 'closed'], 'archived', now);
+  }
+
+  /** Back to where it was: draft if never published, otherwise closed. */
+  unarchive(now: Date): Result<void, SurveyStateError> {
+    return this.move(['archived'], this.state.publishedVersion > 0 ? 'closed' : 'draft', now);
+  }
+
+  /** Stops the fieldwork (spec 015 rule 12). */
+  close(now: Date): Result<void, SurveyStateError> {
+    return this.move(['in_field'], 'closed', now);
+  }
+
+  reopen(now: Date): Result<void, SurveyStateError> {
+    return this.move(['closed'], 'in_field', now);
+  }
+
+  /** Records a new published version; the first one puts a draft in the field. */
+  markPublished(versionNumber: number, now: Date): Result<void, SurveyStateError> {
+    if (this.state.status === 'archived' || versionNumber !== this.state.publishedVersion + 1) {
       return err('SURVEY_NOT_EDITABLE');
     }
-    this.state = { ...this.state, status: 'archived', updatedAt: now };
+    this.state = {
+      ...this.state,
+      publishedVersion: versionNumber,
+      status: this.state.status === 'draft' ? 'in_field' : this.state.status,
+      updatedAt: now,
+    };
     return ok(undefined);
   }
 
-  unarchive(now: Date): Result<void, SurveyStateError> {
-    if (this.state.status !== 'archived') {
+  private move(
+    from: readonly SurveyStatus[],
+    to: SurveyStatus,
+    now: Date,
+  ): Result<void, SurveyStateError> {
+    if (!from.includes(this.state.status)) {
       return err('SURVEY_NOT_EDITABLE');
     }
-    this.state = { ...this.state, status: 'draft', updatedAt: now };
+    this.state = { ...this.state, status: to, updatedAt: now };
     return ok(undefined);
   }
 
@@ -197,9 +246,9 @@ export class Survey {
     return this.state.tse?.registrationNumber ? 'tse_registered' : null;
   }
 
-  /** Nothing from the field is ever deleted: only a draft can go (spec 013 rule 8). */
+  /** Nothing from the field is ever deleted: only a never-published draft can go (spec 013 rule 8). */
   canBeDeleted(): boolean {
-    return this.state.status === 'draft';
+    return this.state.status === 'draft' && this.state.publishedVersion === 0;
   }
 
   /**

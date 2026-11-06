@@ -569,3 +569,192 @@ describe('questionnaire draft (spec 014)', () => {
     ).rejects.toThrow(/questionnaire_drafts_survey_fk/);
   });
 });
+
+describe('publication (spec 015)', () => {
+  const QUESTIONS = {
+    introText: null,
+    questions: [
+      {
+        id: '0193a000-0000-7000-8000-000000000201',
+        code: 'P01',
+        text: 'Você vai votar?',
+        required: true,
+        type: 'single_choice',
+        shuffleOptions: false,
+        options: [
+          { id: '0193a000-0000-7000-8000-000000000202', code: '1', label: 'Sim' },
+          { id: '0193a000-0000-7000-8000-000000000203', code: '2', label: 'Não' },
+        ],
+      },
+    ],
+  };
+
+  const surveyWithQuestionnaire = async (body: Record<string, unknown> = {}) => {
+    const created = await call('POST', '/v1/surveys', {
+      as: 'coordinator',
+      body: { ...SURVEY, ...body },
+    });
+    const { id } = created.json<{ id: string }>();
+    const saved = await call('PUT', `/v1/surveys/${id}/questionnaire`, {
+      as: 'coordinator',
+      body: { revision: 0, content: QUESTIONS },
+    });
+    expect(saved.statusCode).toBe(200);
+    return id;
+  };
+
+  it('CA-01, CA-03: previews, publishes v1 and v2, lists and reads versions', async () => {
+    const id = await surveyWithQuestionnaire();
+    const preview = await call('GET', `/v1/surveys/${id}/questionnaire/publication`, {
+      as: 'coordinator',
+    });
+    expect(preview.json()).toMatchObject({
+      revision: 1,
+      nextVersionNumber: 1,
+      blocker: null,
+      changes: [],
+    });
+    const v1 = await call('POST', `/v1/surveys/${id}/questionnaire/publish`, {
+      as: 'coordinator',
+      body: { revision: 1 },
+    });
+    expect(v1.statusCode).toBe(201);
+    expect(v1.json()).toMatchObject({ number: 1, questionCount: 1 });
+    expect((await call('GET', `/v1/surveys/${id}`, { as: 'coordinator' })).json()).toMatchObject({
+      status: 'in_field',
+      publishedVersion: 1,
+    });
+
+    const again = await call('POST', `/v1/surveys/${id}/questionnaire/publish`, {
+      as: 'coordinator',
+      body: { revision: 1 },
+    });
+    expect(again.statusCode).toBe(409);
+    expect(again.json()).toMatchObject({ code: 'QUESTIONNAIRE_UNCHANGED' });
+
+    const [first] = QUESTIONS.questions;
+    await call('PUT', `/v1/surveys/${id}/questionnaire`, {
+      as: 'coordinator',
+      body: {
+        revision: 1,
+        content: { ...QUESTIONS, questions: [{ ...first, text: 'Vai votar?' }] },
+      },
+    });
+    const v2 = await call('POST', `/v1/surveys/${id}/questionnaire/publish`, {
+      as: 'adminA',
+      body: { revision: 2 },
+    });
+    expect(v2.json()).toMatchObject({ number: 2, changes: [{ kind: 'question_text' }] });
+
+    const list = await call('GET', `/v1/surveys/${id}/versions`, { as: 'coordinator' });
+    expect(list.json<{ items: { number: number }[] }>().items.map((v) => v.number)).toEqual([2, 1]);
+    const read = await call('GET', `/v1/surveys/${id}/versions/1`, { as: 'coordinator' });
+    expect(read.json()).toMatchObject({
+      number: 1,
+      snapshot: { versionNumber: 1, questions: [{ text: 'Você vai votar?' }] },
+    });
+    expect(
+      (await call('GET', `/v1/surveys/${id}/versions/7`, { as: 'coordinator' })).statusCode,
+    ).toBe(404);
+  });
+
+  it('CA-02: pending issues are refused with 422', async () => {
+    const created = await call('POST', '/v1/surveys', { as: 'coordinator', body: SURVEY });
+    const { id } = created.json<{ id: string }>();
+    const res = await call('POST', `/v1/surveys/${id}/questionnaire/publish`, {
+      as: 'coordinator',
+      body: { revision: 0 },
+    });
+    expect(res.statusCode).toBe(422);
+    expect(res.json()).toMatchObject({ code: 'QUESTIONNAIRE_NOT_PUBLISHABLE' });
+  });
+
+  it('CA-04: the application database user cannot change or delete a version', async () => {
+    const id = await surveyWithQuestionnaire();
+    await call('POST', `/v1/surveys/${id}/questionnaire/publish`, {
+      as: 'coordinator',
+      body: { revision: 1 },
+    });
+    if (!testDb) {
+      throw new Error('test database was not created');
+    }
+    const app = new pg.Client({ connectionString: testDb.appUrl });
+    await app.connect();
+    try {
+      await expect(
+        app.query("UPDATE questionnaire_versions SET changes = '[]' WHERE survey_id = $1", [id]),
+      ).rejects.toThrow(/permission denied/);
+      await expect(
+        app.query('DELETE FROM questionnaire_versions WHERE survey_id = $1', [id]),
+      ).rejects.toThrow(/permission denied/);
+    } finally {
+      await app.end();
+    }
+  });
+
+  it('CA-05, CA-06: TSE completeness, fixed registration and the status cycle', async () => {
+    // The questionnaire is saved before the TSE number exists (then it becomes read-only).
+    const id = await surveyWithQuestionnaire({ type: 'electoral' });
+    await call('PATCH', `/v1/surveys/${id}`, {
+      as: 'coordinator',
+      body: { tse: { registrationNumber: 'BA-05555/2026', statisticianName: 'Maria' } },
+    });
+    const incomplete = await call('POST', `/v1/surveys/${id}/questionnaire/publish`, {
+      as: 'coordinator',
+      body: { revision: 1 },
+    });
+    expect(incomplete.statusCode).toBe(422);
+    expect(incomplete.json()).toMatchObject({ code: 'SURVEY_TSE_INCOMPLETE' });
+
+    const tse = {
+      registrationNumber: 'BA-05555/2026',
+      statisticianName: 'Maria',
+      statisticianConre: '1234',
+      contractorName: 'Partido',
+      contractValueCents: 100,
+    };
+    await call('PATCH', `/v1/surveys/${id}`, { as: 'coordinator', body: { tse } });
+    expect(
+      (
+        await call('POST', `/v1/surveys/${id}/questionnaire/publish`, {
+          as: 'coordinator',
+          body: { revision: 1 },
+        })
+      ).statusCode,
+    ).toBe(201);
+    const locked = await call('PATCH', `/v1/surveys/${id}`, {
+      as: 'coordinator',
+      body: { tse: null },
+    });
+    expect(locked.statusCode).toBe(409);
+    expect(locked.json()).toMatchObject({ code: 'SURVEY_FIELD_LOCKED' });
+
+    for (const [action, status] of [
+      ['close', 'closed'],
+      ['archive', 'archived'],
+      ['unarchive', 'closed'],
+      ['reopen', 'in_field'],
+    ] as const) {
+      const res = await call('POST', `/v1/surveys/${id}/${action}`, { as: 'coordinator' });
+      expect(res.json(), action).toMatchObject({ status });
+    }
+  });
+
+  it('CA-08: isolation and permissions', async () => {
+    const id = await surveyWithQuestionnaire();
+    for (const [method, url] of [
+      ['GET', `/v1/surveys/${id}/questionnaire/publication`],
+      ['POST', `/v1/surveys/${id}/questionnaire/publish`],
+      ['GET', `/v1/surveys/${id}/versions`],
+      ['POST', `/v1/surveys/${id}/close`],
+    ] as const) {
+      const body = method === 'POST' ? { revision: 1 } : undefined;
+      expect((await call(method, url, { as: 'adminB', body })).statusCode, url).toBe(404);
+      for (const role of ['analyst', 'client', 'interviewer']) {
+        expect((await call(method, url, { as: role, body })).statusCode, `${role} ${url}`).toBe(
+          403,
+        );
+      }
+    }
+  });
+});

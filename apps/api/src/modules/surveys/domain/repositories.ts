@@ -1,4 +1,5 @@
 import type { Client } from './client.js';
+import type { QuestionnaireVersion } from './publication.js';
 import type { Questionnaire } from './questionnaire.js';
 import type { Survey } from './survey.js';
 
@@ -29,4 +30,13 @@ export interface QuestionnaireRepository {
   find(surveyId: string): Promise<Questionnaire | undefined>;
   /** Inserts or replaces the draft of its survey. */
   save(questionnaire: Questionnaire): Promise<void>;
+}
+
+/** Published versions: insert only (the database refuses updates and deletes). */
+export interface QuestionnaireVersionRepository {
+  latest(surveyId: string): Promise<QuestionnaireVersion | undefined>;
+  /** Newest first. */
+  list(surveyId: string): Promise<QuestionnaireVersion[]>;
+  findByNumber(surveyId: string, number: number): Promise<QuestionnaireVersion | undefined>;
+  add(version: QuestionnaireVersion): Promise<void>;
 }

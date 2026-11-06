@@ -14,6 +14,7 @@ export interface ClientDetails extends ClientFields {
 export interface SurveyDetails extends SurveyFields {
   readonly id: string;
   readonly status: SurveyStatus;
+  readonly publishedVersion: number;
   readonly clientName: string | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;

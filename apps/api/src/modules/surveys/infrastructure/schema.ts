@@ -1,4 +1,8 @@
-import type { QuestionnaireDraft } from '@az-pesquisas/contracts';
+import type {
+  QuestionnaireDraft,
+  QuestionnaireSnapshot,
+  VersionChange,
+} from '@az-pesquisas/contracts';
 import {
   bigint,
   boolean,
@@ -59,6 +63,7 @@ export const surveys = pgTable(
       enum: ['satisfaction', 'market', 'public_opinion', 'municipal_evaluation', 'electoral'],
     }).notNull(),
     status: text('status', { enum: ['draft', 'in_field', 'closed', 'archived'] }).notNull(),
+    publishedVersion: integer('published_version').notNull().default(0),
     municipalityCodes: integer('municipality_codes').array().notNull(),
     fieldStart: date('field_start', { mode: 'string' }),
     fieldEnd: date('field_end', { mode: 'string' }),
@@ -109,5 +114,31 @@ export const questionnaireDrafts = pgTable(
       columns: [t.organizationId, t.surveyId],
       foreignColumns: [surveys.organizationId, surveys.id],
     }).onDelete('cascade'),
+  ],
+);
+
+/**
+ * Published questionnaire versions (spec 015). Insert only: az_app has no
+ * UPDATE or DELETE here (migration 0010, AGENTS.md rule 7).
+ */
+export const questionnaireVersions = pgTable(
+  'questionnaire_versions',
+  {
+    id: uuid('id').primaryKey(),
+    organizationId: organizationId(),
+    surveyId: uuid('survey_id').notNull(),
+    number: integer('number').notNull(),
+    snapshot: jsonb('snapshot').$type<QuestionnaireSnapshot>().notNull(),
+    changes: jsonb('changes').$type<VersionChange[]>().notNull(),
+    publishedAt: timestamp('published_at', { withTimezone: true }).notNull(),
+    publishedBy: uuid('published_by').notNull(),
+  },
+  (t) => [
+    foreignKey({
+      name: 'questionnaire_versions_survey_fk',
+      columns: [t.organizationId, t.surveyId],
+      foreignColumns: [surveys.organizationId, surveys.id],
+    }),
+    unique('questionnaire_versions_survey_number_unique').on(t.surveyId, t.number),
   ],
 );

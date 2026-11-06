@@ -21,6 +21,9 @@ export type AuditAction =
   | 'survey.updated'
   | 'survey.archived'
   | 'survey.unarchived'
+  | 'survey.closed'
+  | 'survey.reopened'
+  | 'questionnaire.published'
   | 'survey.duplicated'
   | 'survey.deleted';
 
@@ -32,7 +35,7 @@ export interface AuditLog {
   record(entry: {
     action: AuditAction;
     actorUserId: string | null;
-    entity: 'client' | 'survey';
+    entity: 'client' | 'survey' | 'questionnaire_version';
     entityId: string;
     metadata?: Readonly<Record<string, unknown>>;
   }): Promise<void>;

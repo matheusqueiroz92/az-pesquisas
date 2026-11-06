@@ -1,6 +1,7 @@
 import type {
   ClientRepository,
   QuestionnaireRepository,
+  QuestionnaireVersionRepository,
   SurveyRepository,
 } from '../domain/repositories.js';
 import type { AuditLog, Clock, IdGenerator, TransactionRunner } from './ports.js';
@@ -10,6 +11,7 @@ export interface SurveysDeps {
   readonly clients: ClientRepository;
   readonly surveys: SurveyRepository;
   readonly questionnaires: QuestionnaireRepository;
+  readonly versions: QuestionnaireVersionRepository;
   readonly tx: TransactionRunner;
   readonly audit: AuditLog;
   readonly clock: Clock;

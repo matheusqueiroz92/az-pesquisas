@@ -64,6 +64,20 @@
       "when": 1793971779290,
       "tag": "0008_questionnaire_drafts_security",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793990601289,
+      "tag": "0009_questionnaire_versions",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793990608706,
+      "tag": "0010_questionnaire_versions_security",
+      "breakpoints": true
     }
   ]
 }

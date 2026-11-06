@@ -89,6 +89,9 @@ export function SurveyForm({
   const [saved, setSaved] = useState(false);
   const [pending, setPending] = useState(false);
   const readOnly = survey?.status === 'archived';
+  // After the first publication the type and a TSE registration are fixed (spec 015).
+  const published = (survey?.publishedVersion ?? 0) > 0;
+  const registrationLocked = published && Boolean(survey?.tse?.registrationNumber);
   const invalid = (field: string) =>
     error?.fields.some((f) => f === field || f.startsWith(`${field}.`)) === true;
 
@@ -161,6 +164,8 @@ export function SurveyForm({
               label={F.type}
               name="type"
               options={TYPE_OPTIONS}
+              disabled={published}
+              {...(published ? { hint: t.fieldwork.typeLocked } : {})}
               value={type}
               onChange={(event) => {
                 setType(event.target.value as SurveyType);
@@ -259,6 +264,7 @@ export function SurveyForm({
             <label className="flex items-start gap-3 text-sm">
               <input
                 type="checkbox"
+                disabled={registrationLocked}
                 checked={tseRegistered}
                 onChange={(event) => {
                   setTseRegistered(event.target.checked);
@@ -276,7 +282,8 @@ export function SurveyForm({
                   label={F.registrationNumber}
                   name="registrationNumber"
                   defaultValue={tse?.registrationNumber ?? ''}
-                  hint={F.registrationNumberHint}
+                  readOnly={registrationLocked}
+                  hint={registrationLocked ? t.fieldwork.tseLocked : F.registrationNumberHint}
                   invalid={invalid('tse.registrationNumber')}
                 />
                 <TextField

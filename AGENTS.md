@@ -166,6 +166,13 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - Perguntas de perfil (`profile`: sexo, faixa etária…) vêm dos blocos prontos de `profile-blocks.ts`. Os códigos das opções são o padrão da empresa e a base da ponderação (018): mudar um modelo afeta todas as pesquisas novas.
 - No painel, toda edição passa pelo reducer puro `src/lib/questionnaire-editor.ts` (testado); os componentes só despacham ações.
 
+## Versões publicadas (spec 015)
+
+- Versão publicada = linha de `questionnaire_versions`, **só INSERT** (o banco recusa UPDATE/DELETE para `az_app`). Nunca escreva migração ou código que altere uma versão.
+- Prévia e publicação usam a mesma função pura `planPublication`; regra nova de publicação entra lá (e no `blocker` do contrato).
+- Mudanças entre versões são calculadas por id estável (`compareVersions`), nunca por posição. Perguntas e opções retiradas continuam valendo para as entrevistas antigas: é a "desativação" do planejamento.
+- Ciclo da pesquisa: rascunho → em campo (1ª publicação) ⇄ encerrada; arquivar de rascunho ou encerrada. Depois da 1ª publicação, tipo e registro no TSE não mudam.
+
 ## Contratos com o app (spec 006)
 
 - Questionário, entrevista e sincronização estão em `packages/contracts` (`questionnaire.ts`, `interview.ts`, `sync.ts`, `azp.ts`).

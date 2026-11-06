@@ -244,6 +244,8 @@ export const SurveyView = z.object({
   title: z.string(),
   type: z.enum(SURVEY_TYPES),
   status: z.enum(SURVEY_STATUSES),
+  /** Number of the latest published questionnaire version; 0 = never published (spec 015). */
+  publishedVersion: z.int().min(0),
   clientId: Id.nullable(),
   clientName: z.string().nullable(),
   municipalityCodes: z.array(z.int()),
@@ -262,6 +264,7 @@ export const SurveySummary = SurveyView.pick({
   title: true,
   type: true,
   status: true,
+  publishedVersion: true,
   clientId: true,
   clientName: true,
   fieldStart: true,

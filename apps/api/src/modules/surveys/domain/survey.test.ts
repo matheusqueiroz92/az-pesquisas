@@ -44,6 +44,7 @@ describe('Survey.create', () => {
       id: ID,
       organizationId: ORG,
       status: 'draft',
+      publishedVersion: 0,
       ...fields(),
       title: 'Avaliação da gestão municipal',
       createdAt: T0,
@@ -187,5 +188,69 @@ describe('Survey.duplicate', () => {
     expect(
       create().duplicate({ id: COPY_ID, title: 'Cópia', now: T1 }).toSnapshot().tse,
     ).toBeNull();
+  });
+});
+
+describe('after publication (spec 015)', () => {
+  const published = (overrides: Partial<SurveyFields> = {}) => {
+    const survey = create(overrides);
+    expect(survey.markPublished(1, T1)).toEqual({ ok: true, value: undefined });
+    return survey;
+  };
+
+  it('the first publication puts a draft in the field; the next ones keep the status', () => {
+    const survey = published();
+    expect(survey.toSnapshot()).toMatchObject({ status: 'in_field', publishedVersion: 1 });
+    expect(survey.markPublished(3, T1)).toEqual({ ok: false, error: 'SURVEY_NOT_EDITABLE' });
+    survey.close(T1);
+    expect(survey.markPublished(2, T1).ok).toBe(true);
+    expect(survey.toSnapshot()).toMatchObject({ status: 'closed', publishedVersion: 2 });
+    expect(survey.canBeDeleted()).toBe(false);
+  });
+
+  it('cycles in field ⇄ closed → archived → closed (CA-06)', () => {
+    const survey = published();
+    expect(survey.reopen(T1).ok).toBe(false);
+    expect(survey.archive(T1).ok).toBe(false);
+    expect(survey.close(T1).ok).toBe(true);
+    expect(survey.close(T1).ok).toBe(false);
+    expect(survey.archive(T1).ok).toBe(true);
+    expect(survey.markPublished(2, T1)).toEqual({ ok: false, error: 'SURVEY_NOT_EDITABLE' });
+    expect(survey.unarchive(T1).ok).toBe(true);
+    expect(survey.status).toBe('closed');
+    expect(survey.reopen(T1).ok).toBe(true);
+    expect(survey.status).toBe('in_field');
+  });
+
+  it('keeps data editable but fixes the type (CA-06)', () => {
+    const survey = published();
+    expect(survey.update({ targetInterviews: 900 }, T1)).toEqual({
+      ok: true,
+      value: { changed: ['targetInterviews'] },
+    });
+    expect(survey.update({ type: 'market' }, T1)).toEqual({
+      ok: false,
+      error: 'SURVEY_FIELD_LOCKED',
+    });
+  });
+
+  it('fixes a TSE registration but lets the other TSE data be corrected (CA-05)', () => {
+    const survey = published({ type: 'electoral', tse: TSE });
+    expect(survey.update({ tse: null }, T1)).toEqual({ ok: false, error: 'SURVEY_FIELD_LOCKED' });
+    expect(survey.update({ tse: { ...TSE, registrationNumber: 'BA-09999/2026' } }, T1)).toEqual({
+      ok: false,
+      error: 'SURVEY_FIELD_LOCKED',
+    });
+    expect(
+      survey.update({ tse: { ...TSE, statisticianName: 'Maria S. Estatística' } }, T1),
+    ).toEqual({
+      ok: true,
+      value: { changed: ['tse'] },
+    });
+  });
+
+  it('lets an electoral survey without a number get one later', () => {
+    const survey = published({ type: 'electoral', tse: { ...TSE, registrationNumber: null } });
+    expect(survey.update({ tse: TSE }, T1).ok).toBe(true);
   });
 });

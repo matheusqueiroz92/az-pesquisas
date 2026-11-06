@@ -11,8 +11,8 @@ import { currentUser } from '@/server/api-client';
 export default async function PanelLayout({ children }: { children: ReactNode }) {
   const me = await currentUser();
   return (
-    <div className="min-h-dvh md:grid md:grid-cols-[16rem_1fr]">
-      <aside className="flex flex-col bg-sidebar text-sidebar-foreground md:sticky md:top-0 md:h-dvh">
+    <div className="min-h-dvh md:grid md:grid-cols-[16rem_1fr] print:block">
+      <aside className="flex flex-col bg-sidebar text-sidebar-foreground md:sticky md:top-0 md:h-dvh print:hidden">
         <div className="flex h-16 items-center justify-between px-5 md:h-20">
           <BrandLockup />
           <div className="md:hidden">
@@ -44,7 +44,7 @@ export default async function PanelLayout({ children }: { children: ReactNode })
         </div>
       </aside>
       <div className="flex min-w-0 flex-col">
-        <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-8 md:px-10 md:py-12">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-8 md:px-10 md:py-12 print:max-w-none print:p-0">
           {children}
         </main>
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import type { SurveyView } from '@az-pesquisas/contracts';
-import { Archive, ArchiveRestore, Copy, Trash2 } from 'lucide-react';
+import { Archive, ArchiveRestore, CirclePause, CirclePlay, Copy, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { SubmitEvent } from 'react';
@@ -71,7 +71,29 @@ export function SurveyActions({ survey }: { survey: SurveyView }) {
           <Copy aria-hidden />
           {t.surveys.duplicate}
         </Button>
-        {archived || survey.status === 'draft' ? (
+        {survey.status === 'in_field' || survey.status === 'closed' ? (
+          <Button
+            variant="secondary"
+            disabled={pending}
+            onClick={() => {
+              const action = survey.status === 'in_field' ? 'close' : 'reopen';
+              void run(
+                () => send('POST', `${base}/${action}`),
+                () => {
+                  router.refresh();
+                },
+              );
+            }}
+          >
+            {survey.status === 'in_field' ? (
+              <CirclePause aria-hidden />
+            ) : (
+              <CirclePlay aria-hidden />
+            )}
+            {survey.status === 'in_field' ? t.fieldwork.close : t.fieldwork.reopen}
+          </Button>
+        ) : null}
+        {archived || survey.status === 'draft' || survey.status === 'closed' ? (
           <Button
             variant="secondary"
             disabled={pending}
@@ -88,7 +110,7 @@ export function SurveyActions({ survey }: { survey: SurveyView }) {
             {archived ? t.surveys.unarchive : t.surveys.archive}
           </Button>
         ) : null}
-        {survey.status === 'draft' ? (
+        {survey.status === 'draft' && survey.publishedVersion === 0 ? (
           <Button
             variant="secondary"
             disabled={pending}

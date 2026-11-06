@@ -6,6 +6,7 @@ import type { SurveysDeps } from '../application/surveys-deps.js';
 import {
   drizzleClientRepository,
   drizzleQuestionnaireRepository,
+  drizzleQuestionnaireVersionRepository,
   drizzleSurveyRepository,
 } from './drizzle-repositories.js';
 
@@ -16,6 +17,7 @@ export const createSurveysDeps = (options: {
   clients: drizzleClientRepository,
   surveys: drizzleSurveyRepository,
   questionnaires: drizzleQuestionnaireRepository,
+  versions: drizzleQuestionnaireVersionRepository,
   tx: createTransactionRunner(options.database),
   audit: drizzleAuditLog,
   clock: options.clock ?? { now: () => new Date() },

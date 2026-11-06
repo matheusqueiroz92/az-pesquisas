@@ -2,7 +2,12 @@ import { err, ok } from '@az-pesquisas/core';
 import type { Result } from '@az-pesquisas/core';
 
 import { Survey } from '../domain/survey.js';
-import type { SurveyChanges, SurveyFields, SurveyStateError } from '../domain/survey.js';
+import type {
+  SurveyChanges,
+  SurveyFields,
+  SurveyStateError,
+  SurveyUpdateError,
+} from '../domain/survey.js';
 import { asManager } from './authorization.js';
 import type { Actor } from './ports.js';
 import type { SurveysDeps } from './surveys-deps.js';
@@ -17,6 +22,7 @@ export interface SurveySummaryDetails {
   readonly title: string;
   readonly type: SurveyDetails['type'];
   readonly status: SurveyDetails['status'];
+  readonly publishedVersion: number;
   readonly clientId: string | null;
   readonly clientName: string | null;
   readonly fieldStart: string | null;
@@ -63,6 +69,7 @@ export const listSurveys = (
           title: s.title,
           type: s.type,
           status: s.status,
+          publishedVersion: s.publishedVersion,
           clientId: s.clientId,
           clientName: s.clientId === null ? null : (names.get(s.clientId) ?? null),
           fieldStart: s.fieldStart,
@@ -112,7 +119,7 @@ export const createSurvey = (
     return ok(toSurveyDetails(survey, clientName.value));
   });
 
-type UpdateError = 'FORBIDDEN' | 'SURVEY_NOT_FOUND' | 'CLIENT_NOT_FOUND' | SurveyStateError;
+type UpdateError = 'FORBIDDEN' | 'SURVEY_NOT_FOUND' | 'CLIENT_NOT_FOUND' | SurveyUpdateError;
 
 export const updateSurvey = (
   deps: SurveysDeps,
@@ -148,11 +155,18 @@ export const updateSurvey = (
     return ok(await detailsOf(deps, survey));
   });
 
+const AUDIT_ACTION = {
+  archive: 'survey.archived',
+  unarchive: 'survey.unarchived',
+  close: 'survey.closed',
+  reopen: 'survey.reopened',
+} as const;
+
 const changeStatus = (
   deps: SurveysDeps,
   actor: Actor,
   surveyId: string,
-  transition: 'archive' | 'unarchive',
+  transition: 'archive' | 'unarchive' | 'close' | 'reopen',
 ): Promise<Result<SurveyDetails, 'FORBIDDEN' | 'SURVEY_NOT_FOUND' | SurveyStateError>> =>
   asManager(
     deps,
@@ -163,13 +177,13 @@ const changeStatus = (
         return err('SURVEY_NOT_FOUND');
       }
       const now = deps.clock.now();
-      const result = transition === 'archive' ? survey.archive(now) : survey.unarchive(now);
+      const result = survey[transition](now);
       if (!result.ok) {
         return result;
       }
       await deps.surveys.save(survey);
       await deps.audit.record({
-        action: transition === 'archive' ? 'survey.archived' : 'survey.unarchived',
+        action: AUDIT_ACTION[transition],
         actorUserId: actor.userId,
         entity: 'survey',
         entityId: survey.id,
@@ -183,6 +197,13 @@ export const archiveSurvey = (deps: SurveysDeps, actor: Actor, surveyId: string)
 
 export const unarchiveSurvey = (deps: SurveysDeps, actor: Actor, surveyId: string) =>
   changeStatus(deps, actor, surveyId, 'unarchive');
+
+/** Stops the fieldwork of a survey in the field (spec 015 rule 12). */
+export const closeSurvey = (deps: SurveysDeps, actor: Actor, surveyId: string) =>
+  changeStatus(deps, actor, surveyId, 'close');
+
+export const reopenSurvey = (deps: SurveysDeps, actor: Actor, surveyId: string) =>
+  changeStatus(deps, actor, surveyId, 'reopen');
 
 export const duplicateSurvey = (
   deps: SurveysDeps,

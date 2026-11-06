@@ -62,3 +62,6 @@ export const parseBrl = (input: string): number | null | undefined => {
   const cents = Number((match[2] ?? '0').padEnd(2, '0'));
   return reais * 100 + cents;
 };
+
+/** "123 456": easier to read aloud and to type (spec 016). */
+export const formatPairingCode = (code: string): string => `${code.slice(0, 3)} ${code.slice(3)}`;

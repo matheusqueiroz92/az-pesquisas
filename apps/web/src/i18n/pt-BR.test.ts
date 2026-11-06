@@ -107,3 +107,17 @@ describe('publication and versions texts (spec 015)', () => {
     expect(t.changeKinds.item_text('P1')).toBe('P1: rótulo alterado para ""');
   });
 });
+
+describe('devices and team texts (spec 016)', () => {
+  it('formats countdowns and counts', () => {
+    expect(t.devices.expiresIn(9, 5)).toBe('Vale por mais 9:05.');
+    expect(t.devices.paired('Aparelho 1', 'SM-X200')).toBe(
+      'Aparelho vinculado: Aparelho 1 (SM-X200).',
+    );
+    expect(t.devices.revokeTitle('Tablet 3')).toBe('Revogar Tablet 3?');
+    expect(t.devices.count(1)).toBe('aparelho');
+    expect(t.devices.count(2)).toBe('aparelhos');
+    expect(t.team.selected(1)).toBe('1 marcado');
+    expect(t.team.selected(3)).toBe('3 marcados');
+  });
+});

@@ -14,6 +14,7 @@ const ITEMS: readonly NavItem[] = [
   { href: '/', label: t.nav.home },
   { href: '/pesquisas', label: t.nav.surveys, permission: 'surveys.manage' },
   { href: '/clientes', label: t.nav.clients, permission: 'surveys.manage' },
+  { href: '/dispositivos', label: t.nav.devices, permission: 'devices.manage' },
   { href: '/usuarios', label: t.nav.users, permission: 'users.manage' },
   { href: '/minha-conta', label: t.nav.account },
 ];

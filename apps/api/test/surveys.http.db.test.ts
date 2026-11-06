@@ -44,7 +44,7 @@ const api = () => {
 };
 
 const call = (
-  method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
+  method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE',
   url: string,
   options: { as?: string; body?: unknown } = {},
 ) => {
@@ -409,5 +409,163 @@ describe('database guarantees (migration 0005)', () => {
         [orgA],
       ),
     ).rejects.toThrow(/surveys_tse_check/);
+  });
+});
+
+describe('questionnaire draft (spec 014)', () => {
+  const CONTENT = {
+    introText: 'Bom dia!',
+    questions: [
+      {
+        id: '0193a000-0000-7000-8000-000000000101',
+        code: 'P01',
+        text: 'Sexo',
+        required: true,
+        type: 'single_choice',
+        shuffleOptions: false,
+        options: [
+          { id: '0193a000-0000-7000-8000-000000000102', code: '1', label: 'Masculino' },
+          { id: '0193a000-0000-7000-8000-000000000103', code: '2', label: 'Feminino' },
+        ],
+      },
+      {
+        id: '0193a000-0000-7000-8000-000000000104',
+        code: 'P02',
+        text: '',
+        required: false,
+        type: 'number',
+        integer: true,
+        min: 16,
+        visibleIf: { question: 'P01', op: 'eq', value: '2' },
+      },
+    ],
+  };
+
+  const newSurvey = async (body: Record<string, unknown> = {}) => {
+    const res = await call('POST', '/v1/surveys', {
+      as: 'coordinator',
+      body: { ...SURVEY, ...body },
+    });
+    expect(res.statusCode).toBe(201);
+    return res.json<{ id: string }>().id;
+  };
+
+  it('CA-01 and CA-06: saves a draft, reads it back and refuses a stale revision', async () => {
+    const id = await newSurvey();
+    const empty = await call('GET', `/v1/surveys/${id}/questionnaire`, { as: 'coordinator' });
+    expect(empty.json()).toEqual({
+      surveyId: id,
+      revision: 0,
+      content: { introText: null, questions: [] },
+      lock: null,
+      updatedAt: null,
+    });
+
+    const saved = await call('PUT', `/v1/surveys/${id}/questionnaire`, {
+      as: 'coordinator',
+      body: { revision: 0, content: CONTENT },
+    });
+    expect(saved.statusCode).toBe(200);
+    expect(saved.json()).toMatchObject({ revision: 1, content: CONTENT });
+
+    const read = await call('GET', `/v1/surveys/${id}/questionnaire`, { as: 'adminA' });
+    expect(read.json()).toMatchObject({ revision: 1, content: CONTENT, lock: null });
+
+    const stale = await call('PUT', `/v1/surveys/${id}/questionnaire`, {
+      as: 'adminA',
+      body: { revision: 0, content: { introText: null, questions: [] } },
+    });
+    expect(stale.statusCode).toBe(409);
+    expect(stale.json()).toMatchObject({ code: 'QUESTIONNAIRE_CONFLICT' });
+  });
+
+  it('refuses a malformed draft', async () => {
+    const id = await newSurvey();
+    const res = await call('PUT', `/v1/surveys/${id}/questionnaire`, {
+      as: 'coordinator',
+      body: {
+        revision: 0,
+        content: { questions: [{ ...CONTENT.questions[0], type: 'video' }] },
+      },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('CA-07: a survey registered at the TSE has a read-only questionnaire', async () => {
+    const id = await newSurvey({ type: 'electoral', tse: { registrationNumber: 'BA-04321/2026' } });
+    const res = await call('PUT', `/v1/surveys/${id}/questionnaire`, {
+      as: 'coordinator',
+      body: { revision: 0, content: CONTENT },
+    });
+    expect(res.statusCode).toBe(409);
+    expect(res.json()).toMatchObject({ code: 'QUESTIONNAIRE_LOCKED' });
+    expect(
+      (await call('GET', `/v1/surveys/${id}/questionnaire`, { as: 'coordinator' })).json(),
+    ).toMatchObject({ lock: 'tse_registered' });
+  });
+
+  it('CA-08: duplicating copies the draft with new ids; deleting removes it', async () => {
+    const id = await newSurvey();
+    await call('PUT', `/v1/surveys/${id}/questionnaire`, {
+      as: 'coordinator',
+      body: { revision: 0, content: CONTENT },
+    });
+    const copy = (await call('POST', `/v1/surveys/${id}/duplicate`, { as: 'coordinator' })).json<{
+      id: string;
+    }>();
+    const copied = (
+      await call('GET', `/v1/surveys/${copy.id}/questionnaire`, { as: 'coordinator' })
+    ).json<{ content: { questions: { id: string; code: string }[] } }>();
+    expect(copied.content.questions.map((q) => q.code)).toEqual(['P01', 'P02']);
+    expect(copied.content.questions[0]?.id).not.toBe(CONTENT.questions[0]?.id);
+
+    expect((await call('DELETE', `/v1/surveys/${copy.id}`, { as: 'coordinator' })).statusCode).toBe(
+      204,
+    );
+    const [left] = await owner<{ n: string }>(
+      'SELECT count(*) AS n FROM questionnaire_drafts WHERE survey_id = $1',
+      [copy.id],
+    );
+    expect(left?.n).toBe('0');
+  });
+
+  it('CA-09: other organizations get 404, other roles 403', async () => {
+    const id = await newSurvey();
+    expect(
+      (await call('GET', `/v1/surveys/${id}/questionnaire`, { as: 'adminB' })).statusCode,
+    ).toBe(404);
+    expect(
+      (
+        await call('PUT', `/v1/surveys/${id}/questionnaire`, {
+          as: 'adminB',
+          body: { revision: 0, content: CONTENT },
+        })
+      ).statusCode,
+    ).toBe(404);
+    for (const role of ['analyst', 'client', 'interviewer']) {
+      expect((await call('GET', `/v1/surveys/${id}/questionnaire`, { as: role })).statusCode).toBe(
+        403,
+      );
+      expect(
+        (
+          await call('PUT', `/v1/surveys/${id}/questionnaire`, {
+            as: role,
+            body: { revision: 0, content: CONTENT },
+          })
+        ).statusCode,
+      ).toBe(403);
+    }
+  });
+
+  it('the composite FK keeps a draft inside the organization of its survey', async () => {
+    const id = await newSurvey();
+    const [orgB] = await owner<{ id: string }>("SELECT id FROM organizations WHERE slug = 'b'");
+    await expect(
+      owner(
+        `INSERT INTO questionnaire_drafts (survey_id, organization_id, content, revision, updated_at)
+         VALUES ($1, $2, '{"questions": []}', 1, now())`,
+        [id, orgB?.id],
+      ),
+    ).rejects.toThrow(/questionnaire_drafts_survey_fk/);
   });
 });

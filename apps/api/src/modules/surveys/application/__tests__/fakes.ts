@@ -1,5 +1,7 @@
 import { currentOrganizationId } from '../../../../shared/tenancy/tenant-context.js';
 import { Client } from '../../domain/client.js';
+import { Questionnaire } from '../../domain/questionnaire.js';
+import type { QuestionnaireSnapshotState } from '../../domain/questionnaire.js';
 import type { ClientSnapshot } from '../../domain/client.js';
 import { Survey } from '../../domain/survey.js';
 import type { SurveySnapshot } from '../../domain/survey.js';
@@ -60,6 +62,8 @@ export const createFakes = (options: { now?: Date } = {}) => {
   let idCounter = 0;
   const clients = new Table<ClientSnapshot>();
   const surveys = new Table<SurveySnapshot>();
+  // Keyed by survey id, like the table (survey_id is the primary key).
+  const questionnaires = new Table<QuestionnaireSnapshotState & { id: string }>();
   const auditEntries: AuditEntry[] = [];
   const locks: string[] = [];
 
@@ -96,7 +100,10 @@ export const createFakes = (options: { now?: Date } = {}) => {
       },
     },
     surveys: {
-      findById: (id) => {
+      findById: (id, opts) => {
+        if (opts?.forUpdate) {
+          locks.push(id);
+        }
         const row = surveys.get(id);
         return Promise.resolve(row ? Survey.fromSnapshot(row) : undefined);
       },
@@ -116,6 +123,7 @@ export const createFakes = (options: { now?: Date } = {}) => {
       },
       remove: (id) => {
         surveys.delete(id);
+        questionnaires.delete(id); // ON DELETE CASCADE
         return Promise.resolve();
       },
       countByClient: () => {
@@ -128,17 +136,40 @@ export const createFakes = (options: { now?: Date } = {}) => {
         return Promise.resolve(counts);
       },
     },
+    questionnaires: {
+      find: (surveyId) => {
+        const row = questionnaires.get(surveyId);
+        if (!row) {
+          return Promise.resolve(undefined);
+        }
+        const { id: _id, ...state } = row;
+        return Promise.resolve(Questionnaire.fromSnapshot(state));
+      },
+      save: (questionnaire) => {
+        const state = questionnaire.toSnapshot();
+        if (!surveys.get(state.surveyId)) {
+          throw new Error('fake FK: survey of another organization');
+        }
+        questionnaires.put({ ...state, id: state.surveyId });
+        return Promise.resolve();
+      },
+    },
     tx: {
       // Commits unless the work throws, like a real transaction.
       run: async (work) => {
         currentOrganizationId();
-        const backup = { clients: new Map(clients.rows), surveys: new Map(surveys.rows) };
+        const backup = {
+          clients: new Map(clients.rows),
+          surveys: new Map(surveys.rows),
+          questionnaires: new Map(questionnaires.rows),
+        };
         const auditLength = auditEntries.length;
         try {
           return await work();
         } catch (error) {
           clients.rows = backup.clients;
           surveys.rows = backup.surveys;
+          questionnaires.rows = backup.questionnaires;
           auditEntries.length = auditLength;
           throw error;
         }
@@ -161,7 +192,7 @@ export const createFakes = (options: { now?: Date } = {}) => {
 
   return {
     deps,
-    tables: { clients, surveys },
+    tables: { clients, surveys, questionnaires },
     auditEntries,
     locks,
     advance: (ms: number) => {

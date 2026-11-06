@@ -200,12 +200,24 @@ export const duplicateSurvey = (
       now: deps.clock.now(),
     });
     await deps.surveys.add(copy);
+    // The copy takes the questionnaire draft too, with new ids (spec 014 rule 15).
+    const questionnaire = await deps.questionnaires.find(original.id);
+    if (questionnaire) {
+      await deps.questionnaires.save(
+        questionnaire.copyFor({
+          surveyId: copy.id,
+          now: deps.clock.now(),
+          by: actor.userId,
+          newId: () => deps.ids.next(),
+        }),
+      );
+    }
     await deps.audit.record({
       action: 'survey.duplicated',
       actorUserId: actor.userId,
       entity: 'survey',
       entityId: copy.id,
-      metadata: { sourceSurveyId: original.id },
+      metadata: { sourceSurveyId: original.id, questionCount: questionnaire?.questionCount ?? 0 },
     });
     return ok(await detailsOf(deps, copy));
   });

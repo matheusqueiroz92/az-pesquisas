@@ -7,6 +7,7 @@ import { HealthController } from './health/health.controller.js';
 import { READINESS_CHECKS } from './health/readiness.js';
 import type { ReadinessCheck } from './health/readiness.js';
 import { IdentityModule } from './modules/identity/presentation/index.js';
+import { SurveysModule } from './modules/surveys/presentation/index.js';
 import { AuthGuard } from './shared/auth/auth.guard.js';
 import { TenantInterceptor } from './shared/auth/tenant.interceptor.js';
 import { APP_CONFIG } from './shared/config/app-config.token.js';
@@ -39,6 +40,7 @@ export class AppModule {
       imports: [
         ThrottlerModule.forRoot([DEFAULT_RATE_LIMIT]),
         IdentityModule,
+        SurveysModule,
         ...(options.extraModules ?? []),
       ],
       controllers: [HealthController],

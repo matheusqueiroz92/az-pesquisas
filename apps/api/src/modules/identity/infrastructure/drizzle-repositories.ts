@@ -1,8 +1,7 @@
 import { and, eq, isNull, ne } from 'drizzle-orm';
 
 import { currentTx } from '../../../shared/database/transaction-context.js';
-import { newId } from '../../../shared/ids.js';
-import { currentOrganizationId } from '../../../shared/tenancy/tenant-context.js';
+import { drizzleAuditLog as sharedAuditLog } from '../../../shared/audit/drizzle-audit-log.js';
 import type { AuditLog } from '../application/ports.js';
 import { PasswordReset } from '../domain/password-reset.js';
 import type {
@@ -13,7 +12,7 @@ import type {
 } from '../domain/repositories.js';
 import { Session } from '../domain/session.js';
 import { User } from '../domain/user.js';
-import { auditLogs, organizations, passwordResets, sessions, users } from './schema.js';
+import { organizations, passwordResets, sessions, users } from './schema.js';
 
 // Every query below runs in the tenant transaction (RLS on): no organization
 // filter is needed here for isolation, and none could bypass it.
@@ -95,18 +94,4 @@ export const drizzleOrganizationRepository: OrganizationRepository = {
   },
 };
 
-export const drizzleAuditLog: AuditLog = {
-  record: async (entry) => {
-    await currentTx()
-      .insert(auditLogs)
-      .values({
-        id: newId(),
-        organizationId: currentOrganizationId(),
-        actorUserId: entry.actorUserId,
-        action: entry.action,
-        entity: entry.entity,
-        entityId: entry.entityId,
-        metadata: entry.metadata ?? {},
-      });
-  },
-};
+export const drizzleAuditLog: AuditLog = sharedAuditLog;

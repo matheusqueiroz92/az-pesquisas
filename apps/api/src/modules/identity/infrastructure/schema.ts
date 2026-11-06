@@ -1,14 +1,4 @@
-import { sql } from 'drizzle-orm';
-import {
-  index,
-  integer,
-  jsonb,
-  pgTable,
-  text,
-  timestamp,
-  uniqueIndex,
-  uuid,
-} from 'drizzle-orm/pg-core';
+import { index, integer, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
 const timestamps = {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -96,23 +86,4 @@ export const passwordResets = pgTable(
     index('password_resets_organization_id_idx').on(t.organizationId),
     index('password_resets_user_id_idx').on(t.userId),
   ],
-);
-
-/** Append-only: az_app has no UPDATE/DELETE on this table (migration 0003). */
-export const auditLogs = pgTable(
-  'audit_logs',
-  {
-    id: uuid('id').primaryKey(),
-    organizationId: organizationId(),
-    actorUserId: uuid('actor_user_id'),
-    action: text('action').notNull(),
-    entity: text('entity').notNull(),
-    entityId: uuid('entity_id').notNull(),
-    metadata: jsonb('metadata')
-      .$type<Readonly<Record<string, unknown>>>()
-      .notNull()
-      .default(sql`'{}'::jsonb`),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  },
-  (t) => [index('audit_logs_organization_created_idx').on(t.organizationId, t.createdAt)],
 );

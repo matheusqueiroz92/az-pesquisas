@@ -5,6 +5,6 @@
 - [x] T3 — Domínio: `Questionnaire` (revisão, cópia com ids novos) e trava da pesquisa
 - [x] T4 — Casos de uso: ler, salvar (trava + revisão), duplicar pesquisa copia o rascunho
 - [x] T5 — Migrações 0007/0008 com RLS, repositório e rotas (teste HTTP com banco)
-- [ ] T6 — Estado do editor no painel (reducer puro, testado)
-- [ ] T7 — Telas: abas da pesquisa, lista com arrastar e soltar, editor por tipo, condições, pré-visualização, salvamento automático
-- [ ] T8 — Ponta a ponta; AGENTS.md
+- [x] T6 — Estado do editor no painel (reducer puro, testado)
+- [x] T7 — Telas: abas da pesquisa, lista com arrastar e soltar, editor por tipo, condições, pré-visualização, salvamento automático
+- [x] T8 — Ponta a ponta; AGENTS.md

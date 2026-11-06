@@ -23,7 +23,7 @@ const failure = (status: number, body: unknown): SendResult<never> => {
 };
 
 export const send = async <T = unknown>(
-  method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
+  method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE',
   url: string,
   body?: unknown,
 ): Promise<SendResult<T>> => {

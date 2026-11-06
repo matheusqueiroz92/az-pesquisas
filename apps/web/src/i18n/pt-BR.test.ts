@@ -57,3 +57,24 @@ describe('plural and template texts (spec 013)', () => {
     expect(t.audioModes.on).toBe('Ligada');
   });
 });
+
+describe('questionnaire texts (spec 014)', () => {
+  it('pluralizes and names', () => {
+    const q = t.questionnaire;
+    expect(q.questions(1)).toBe('1 pergunta');
+    expect(q.questions(2)).toBe('2 perguntas');
+    expect(q.issues.title(1)).toBe('1 pendência para publicar');
+    expect(q.issues.title(3)).toBe('3 pendências para publicar');
+    expect(q.moveUp('P01')).toBe('Subir P01');
+    expect(q.moveDown('P01')).toBe('Descer P01');
+    expect(q.drag('P01')).toBe('Arrastar P01');
+    expect(q.removeConfirm('P01')).toContain('P01');
+    expect(q.items.position(2)).toBe('Item 2');
+  });
+
+  it('labels every question type, operator and pending issue', () => {
+    expect(Object.keys(t.questionTypes)).toHaveLength(10);
+    expect(Object.keys(t.operators)).toHaveLength(10);
+    expect(Object.values(t.lint).every((text) => text.length > 0)).toBe(true);
+  });
+});

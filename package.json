@@ -23,9 +23,9 @@
     "db:up": "docker compose -f infra/compose/docker-compose.local.yml up -d --wait",
     "db:down": "docker compose -f infra/compose/docker-compose.local.yml down",
     "db:reset": "docker compose -f infra/compose/docker-compose.local.yml down -v && docker compose -f infra/compose/docker-compose.local.yml up -d --wait",
-    "db:migrate": "pnpm --filter @az-pesquisas/api db:migrate",
+    "db:migrate": "turbo run build --filter=@az-pesquisas/api^... && pnpm --filter @az-pesquisas/api db:migrate",
     "db:generate": "pnpm --filter @az-pesquisas/api db:generate",
-    "seed:admin": "pnpm --filter @az-pesquisas/api seed:admin"
+    "seed:admin": "turbo run build --filter=@az-pesquisas/api^... && pnpm --filter @az-pesquisas/api seed:admin"
   },
   "devDependencies": {
     "@az-pesquisas/config": "workspace:*",

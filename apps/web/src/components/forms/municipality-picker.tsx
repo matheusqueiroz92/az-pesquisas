@@ -1,15 +1,19 @@
 'use client';
 
-import { BAHIA_MUNICIPALITIES, bahiaMunicipalityName } from '@az-pesquisas/contracts';
+import { HOME_UF, MUNICIPALITIES, STATES } from '@az-pesquisas/contracts';
+import type { Uf } from '@az-pesquisas/contracts';
 import { Search, X } from 'lucide-react';
 import { useId, useMemo, useState } from 'react';
 
 import { t } from '@/i18n/pt-BR';
-import { foldText } from '@/lib/surveys';
+import { foldText, municipalityLabel } from '@/lib/surveys';
 
-const INDEX = BAHIA_MUNICIPALITIES.map((m) => ({ ...m, folded: foldText(m.name) }));
+const INDEX = MUNICIPALITIES.map((m) => ({ ...m, folded: foldText(m.name) }));
 
-/** Searchable checklist of the 417 municipalities of Bahia; chosen ones become chips. */
+/**
+ * Searchable checklist of the municipalities of one state (Bahia first; any
+ * state can be picked, spec 013 change 1). Chosen ones become chips.
+ */
 export function MunicipalityPicker({
   value,
   onChange,
@@ -22,12 +26,14 @@ export function MunicipalityPicker({
   invalid?: boolean;
 }) {
   const [query, setQuery] = useState('');
+  const [uf, setUf] = useState<Uf>(HOME_UF);
   const searchId = useId();
+  const ufId = useId();
   const chosen = useMemo(() => new Set(value), [value]);
   const matches = useMemo(() => {
     const folded = foldText(query);
-    return folded === '' ? INDEX : INDEX.filter((m) => m.folded.includes(folded));
-  }, [query]);
+    return INDEX.filter((m) => m.uf === uf && (folded === '' || m.folded.includes(folded)));
+  }, [query, uf]);
 
   const toggle = (code: number) => {
     onChange(chosen.has(code) ? value.filter((c) => c !== code) : [...value, code]);
@@ -44,7 +50,7 @@ export function MunicipalityPicker({
           {t.surveys.fields.municipalitySelected(value.length)}
         </span>
         {value.map((code) => {
-          const name = bahiaMunicipalityName(code) ?? String(code);
+          const name = municipalityLabel(code);
           return (
             <span
               key={code}
@@ -83,35 +89,55 @@ export function MunicipalityPicker({
             invalid ? 'rounded-sm border border-error' : 'rounded-sm border border-border-strong'
           }
         >
-          <div className="relative border-b border-border">
-            <Search
-              aria-hidden
-              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-            />
-            <label htmlFor={searchId} className="sr-only">
-              {t.surveys.fields.municipalitySearch}
+          <div className="flex border-b border-border">
+            <label htmlFor={ufId} className="sr-only">
+              {t.surveys.fields.municipalityState}
             </label>
-            <input
-              id={searchId}
-              type="search"
-              value={query}
+            <select
+              id={ufId}
+              value={uf}
               onChange={(event) => {
-                setQuery(event.target.value);
+                setUf(event.target.value as Uf);
               }}
-              onKeyDown={(event) => {
-                // Enter picks the only match instead of submitting the whole form.
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                  const only = matches.length === 1 ? matches[0] : undefined;
-                  if (only && !chosen.has(only.code)) {
-                    toggle(only.code);
-                    setQuery('');
+              title={t.surveys.fields.municipalityState}
+              className="h-11 shrink-0 rounded-tl-sm border-r border-border bg-surface-sunken/60 px-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-ring/30"
+            >
+              {STATES.map((state) => (
+                <option key={state.uf} value={state.uf}>
+                  {state.uf}
+                </option>
+              ))}
+            </select>
+            <div className="relative flex-1">
+              <Search
+                aria-hidden
+                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+              />
+              <label htmlFor={searchId} className="sr-only">
+                {t.surveys.fields.municipalitySearch}
+              </label>
+              <input
+                id={searchId}
+                type="search"
+                value={query}
+                onChange={(event) => {
+                  setQuery(event.target.value);
+                }}
+                onKeyDown={(event) => {
+                  // Enter picks the only match instead of submitting the whole form.
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const only = matches.length === 1 ? matches[0] : undefined;
+                    if (only && !chosen.has(only.code)) {
+                      toggle(only.code);
+                      setQuery('');
+                    }
                   }
-                }
-              }}
-              placeholder={t.surveys.fields.municipalitySearch}
-              className="h-11 w-full rounded-t-sm bg-surface pr-3 pl-9 text-base placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-ring/30"
-            />
+                }}
+                placeholder={t.surveys.fields.municipalitySearch}
+                className="h-11 w-full rounded-tr-sm bg-surface pr-3 pl-9 text-base placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-ring/30"
+              />
+            </div>
           </div>
           <ul
             className="max-h-56 overflow-y-auto py-1"

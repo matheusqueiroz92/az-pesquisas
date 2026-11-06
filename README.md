@@ -23,7 +23,7 @@ pnpm check        # os testes de banco usam o Postgres do db:up
 ```bash
 cp apps/api/.env.example apps/api/.env
 pnpm db:up
-pnpm db:migrate
+pnpm db:migrate    # compila os pacotes de que a API depende e aplica as migrações
 pnpm seed:admin   # primeira organização e admin (ajuste SEED_* no .env)
 pnpm build
 pnpm --filter @az-pesquisas/api dev

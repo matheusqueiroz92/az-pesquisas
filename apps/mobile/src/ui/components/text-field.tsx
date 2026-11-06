@@ -8,7 +8,7 @@ interface TextFieldProps extends TextInputProps {
   readonly label: string;
 }
 
-export function TextField({ label, ...props }: TextFieldProps) {
+export function TextField({ label, style, ...props }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
   return (
     <View style={styles.field}>
@@ -22,8 +22,8 @@ export function TextField({ label, ...props }: TextFieldProps) {
         onBlur={() => {
           setFocused(false);
         }}
-        style={[styles.input, focused && styles.focused]}
         {...props}
+        style={[styles.input, focused && styles.focused, style]}
       />
     </View>
   );

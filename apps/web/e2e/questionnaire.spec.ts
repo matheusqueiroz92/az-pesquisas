@@ -115,4 +115,30 @@ test.describe('Editor de questionário (spec 014)', () => {
     await expect(page.getByText('Pesquisa registrada no TSE')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Adicionar pergunta' })).toHaveCount(0);
   });
+
+  test('014.1: insere o bloco de perfil básico pronto e editável', async ({ page }) => {
+    await loginAndWait(page, ALFA.adminEmail, ALFA.adminPassword);
+    const id = await createSurvey(page);
+    await page.goto(`/pesquisas/${id}/questionario`);
+    await addQuestion(page, 'signature');
+    await page.getByLabel('Bloco').selectOption('basic');
+    await page.getByLabel('Onde inserir').selectOption('start');
+    await page.getByRole('button', { name: 'Inserir bloco' }).click();
+    await expect(page.getByText('3 perguntas inseridas.')).toBeVisible();
+    await expect(codes(page)).toHaveText(['SEXO', 'FAIXA_ETARIA', 'ESCOLARIDADE', 'P01']);
+    await expect(page.getByTestId('profile-badge')).toContainText('Variável de perfil: Sexo');
+
+    await page.getByRole('button', { name: /Qual a sua idade\?/ }).click();
+    await expect(form(page).getByLabel('Rótulo (Item 5)')).toHaveValue('60 anos ou mais');
+    await form(page).getByLabel('Rótulo (Item 5)').fill('60 anos e mais');
+    await saved(page);
+
+    await page.getByLabel('Bloco').selectOption('basic');
+    await page.getByRole('button', { name: 'Inserir bloco' }).click();
+    await expect(
+      page.getByText('Todas as perguntas deste bloco já estão no questionário.'),
+    ).toBeVisible();
+    await page.reload();
+    await expect(codes(page)).toHaveText(['SEXO', 'FAIXA_ETARIA', 'ESCOLARIDADE', 'P01']);
+  });
 });

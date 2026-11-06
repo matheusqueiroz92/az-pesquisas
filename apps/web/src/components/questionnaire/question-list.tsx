@@ -17,7 +17,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { DraftQuestion } from '@az-pesquisas/contracts';
-import { ArrowDown, ArrowUp, GitBranch, GripVertical } from 'lucide-react';
+import { ArrowDown, ArrowUp, GitBranch, GripVertical, UserRound } from 'lucide-react';
 import { useId } from 'react';
 
 import { t } from '@/i18n/pt-BR';
@@ -85,6 +85,9 @@ function Row({
           <span className="truncate text-xs text-muted-foreground">
             {t.questionTypes[question.type]}
           </span>
+          {question.profile ? (
+            <UserRound aria-label={t.profiles[question.profile]} className="size-3.5 text-info" />
+          ) : null}
           {question.visibleIf ? (
             <GitBranch aria-label={Q.conditional} className="size-3.5 text-info" />
           ) : null}

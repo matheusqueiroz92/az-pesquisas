@@ -163,6 +163,7 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - Formato e regras moram em `packages/contracts/src/questionnaire-draft.ts`: `QuestionnaireDraft` (estrutura, aceita incompleto), `lintQuestionnaire` (pendências para publicar) e, como regra final, o `QuestionnaireSnapshot` da spec 006. Garantia testada: sem pendências ⇒ snapshot válido. Regra nova de pergunta entra no snapshot **e** no lint.
 - Ids de pergunta, opção e linha são estáveis: mudar texto, código ou ordem nunca troca o id. Ids novos só ao criar ou duplicar (UUID v7).
 - Condições citam o **código** da pergunta; renomear o código propaga (`renameInCondition`).
+- Perguntas de perfil (`profile`: sexo, faixa etária…) vêm dos blocos prontos de `profile-blocks.ts`. Os códigos das opções são o padrão da empresa e a base da ponderação (018): mudar um modelo afeta todas as pesquisas novas.
 - No painel, toda edição passa pelo reducer puro `src/lib/questionnaire-editor.ts` (testado); os componentes só despacham ações.
 
 ## Contratos com o app (spec 006)

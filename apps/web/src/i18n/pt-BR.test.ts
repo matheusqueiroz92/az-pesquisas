@@ -78,3 +78,12 @@ describe('questionnaire texts (spec 014)', () => {
     expect(Object.values(t.lint).every((text) => text.length > 0)).toBe(true);
   });
 });
+
+describe('profile block texts (spec 014, change 1)', () => {
+  it('counts inserted questions and names the variable', () => {
+    expect(t.profileBlocks.inserted(1)).toBe('1 pergunta inserida.');
+    expect(t.profileBlocks.inserted(7)).toBe('7 perguntas inseridas.');
+    expect(t.profileBlocks.badge(t.profiles.sex)).toBe('Variável de perfil: Sexo');
+    expect(Object.keys(t.profiles)).toHaveLength(7);
+  });
+});

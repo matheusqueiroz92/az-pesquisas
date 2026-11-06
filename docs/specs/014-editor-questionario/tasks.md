@@ -8,3 +8,9 @@
 - [x] T6 — Estado do editor no painel (reducer puro, testado)
 - [x] T7 — Telas: abas da pesquisa, lista com arrastar e soltar, editor por tipo, condições, pré-visualização, salvamento automático
 - [x] T8 — Ponta a ponta; AGENTS.md
+
+## Alteração 1 — blocos prontos de perfil
+
+- [x] Variável de perfil no contrato (snapshot e rascunho) e pendência de repetição
+- [x] Modelos Perfil básico e Perfil completo, com teste de que viram snapshot válido
+- [x] Inserir bloco no editor, selo de perfil, ponta a ponta

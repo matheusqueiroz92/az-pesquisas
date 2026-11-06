@@ -4,6 +4,7 @@ import { Id, IsoDateTime } from './common.js';
 import {
   CONDITION_OPERATORS,
   ItemCode,
+  PROFILE_KEYS,
   QuestionCode,
   QuestionnaireSnapshot,
 } from './questionnaire.js';
@@ -72,6 +73,7 @@ const draftBase = {
   helpText: DraftText(1000).optional(),
   required: z.boolean(),
   visibleIf: DraftCondition.optional(),
+  profile: z.enum(PROFILE_KEYS).optional(),
 };
 
 export const DraftQuestion = z.discriminatedUnion('type', [
@@ -208,6 +210,7 @@ export const LINT_CODES = [
   'TEXT_EMPTY',
   'CODE_INVALID',
   'CODE_REPEATED',
+  'PROFILE_REPEATED',
   'OPTIONS_TOO_FEW',
   'ROWS_EMPTY',
   'ITEM_LABEL_EMPTY',
@@ -334,7 +337,14 @@ export const lintQuestionnaire = (draft: QuestionnaireDraft): LintIssue[] => {
 
   const earlier = new Set<string>();
   const codes = new Set<string>();
+  const profiles = new Set<string>();
   for (const q of draft.questions) {
+    if (q.profile) {
+      if (profiles.has(q.profile)) {
+        push({ code: 'PROFILE_REPEATED', questionId: q.id });
+      }
+      profiles.add(q.profile);
+    }
     if (q.text.trim() === '') {
       push({ code: 'TEXT_EMPTY', questionId: q.id });
     }

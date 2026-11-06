@@ -173,6 +173,14 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - Mudanças entre versões são calculadas por id estável (`compareVersions`), nunca por posição. Perguntas e opções retiradas continuam valendo para as entrevistas antigas: é a "desativação" do planejamento.
 - Ciclo da pesquisa: rascunho → em campo (1ª publicação) ⇄ encerrada; arquivar de rascunho ou encerrada. Depois da 1ª publicação, tipo e registro no TSE não mudam.
 
+## Dispositivos e equipe (spec 016)
+
+- Contexto `devices`. Código de vinculação e token do aparelho: só o hash vai para o banco; nunca registre nenhum dos dois em log.
+- Rotas do app que ainda não têm organização (vincular, heartbeat) encontram a linha por funções SECURITY DEFINER que devolvem só ids (`devices_find_*`). Função nova desse tipo: `search_path` fixo e `GRANT EXECUTE` só para `az_app`.
+- Um contexto lê outro só pelo diretório público do `index.ts` (`identityDirectory`, `surveyDirectory`), nunca pelas tabelas.
+- O dependency-cruiser aceita ciclos só de `import type`; ciclo com código de verdade continua proibido.
+- No app, sem aparelho vinculado não há login: a ordem é vincular → entrar.
+
 ## Contratos com o app (spec 006)
 
 - Questionário, entrevista e sincronização estão em `packages/contracts` (`questionnaire.ts`, `interview.ts`, `sync.ts`, `azp.ts`).

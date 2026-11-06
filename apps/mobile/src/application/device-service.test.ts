@@ -70,7 +70,7 @@ describe('DeviceService.pair', () => {
   });
 
   it.each([
-    [{ kind: 'rejected', status: 400, code: 'PAIRING_CODE_INVALID' } as const, 'invalid-code'],
+    [{ kind: 'rejected', status: 422, code: 'PAIRING_CODE_INVALID' } as const, 'invalid-code'],
     [{ kind: 'rejected', status: 429, code: undefined } as const, 'rate-limited'],
     [{ kind: 'offline' } as const, 'offline'],
     [{ kind: 'server', status: 500 } as const, 'server'],

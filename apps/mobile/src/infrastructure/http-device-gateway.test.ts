@@ -53,8 +53,8 @@ describe('HttpDeviceGateway', () => {
 
   it('maps 4xx to rejected with the code, 5xx to server, network failure to offline', async () => {
     expect(
-      await gatewayWith(json(400, { code: 'PAIRING_CODE_INVALID' })).gateway.pair('1', INFO),
-    ).toEqual(err({ kind: 'rejected', status: 400, code: 'PAIRING_CODE_INVALID' }));
+      await gatewayWith(json(422, { code: 'PAIRING_CODE_INVALID' })).gateway.pair('1', INFO),
+    ).toEqual(err({ kind: 'rejected', status: 422, code: 'PAIRING_CODE_INVALID' }));
     expect(await gatewayWith(json(429)).gateway.pair('1', INFO)).toEqual(
       err({ kind: 'rejected', status: 429, code: undefined }),
     );

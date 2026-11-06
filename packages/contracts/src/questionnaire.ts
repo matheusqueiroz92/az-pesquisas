@@ -72,6 +72,22 @@ export const Option = z.object({
 });
 export type Option = z.infer<typeof Option>;
 
+/**
+ * Respondent profile variables (spec 014, change 1). A question marked with one
+ * is THE question of that variable: weighting and default crosstabs of the
+ * results (spec 018) find it by this key, whatever its text or code.
+ */
+export const PROFILE_KEYS = [
+  'sex',
+  'age_group',
+  'education',
+  'family_income',
+  'religion',
+  'occupation',
+  'area',
+] as const;
+export type ProfileKey = (typeof PROFILE_KEYS)[number];
+
 const questionBase = {
   id: Id,
   code: QuestionCode,
@@ -80,6 +96,7 @@ const questionBase = {
   helpText: z.string().max(1000).optional(),
   required: z.boolean(),
   visibleIf: Condition.optional(),
+  profile: z.enum(PROFILE_KEYS).optional(),
 };
 
 const Options = z.array(Option).min(2).max(200);
@@ -399,6 +416,13 @@ export const QuestionnaireSnapshot = z
     }
     for (const i of findDuplicates(questions, (q) => q.code)) {
       issues.push({ path: ['questions', i, 'code'], message: 'repeated question code' });
+    }
+    const profiled = questions.flatMap((q, index) =>
+      q.profile ? [{ index, key: q.profile }] : [],
+    );
+    for (const i of findDuplicates(profiled, (p) => p.key)) {
+      const index = profiled[i]?.index ?? 0;
+      issues.push({ path: ['questions', index, 'profile'], message: 'repeated profile variable' });
     }
 
     // Only questions BEFORE the current one are visible to its condition: no cycles possible.

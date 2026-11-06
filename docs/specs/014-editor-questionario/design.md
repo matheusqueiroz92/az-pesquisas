@@ -36,3 +36,9 @@
 - Editor da pergunta ao centro; pré-visualização em moldura de celular à direita (telas largas).
 - Salvamento automático 1,2 s depois da última mudança (`PUT` com a revisão); estado "Salvando…/Salvo/Erro"; conflito mostra aviso com "Recarregar"; `beforeunload` com alterações pendentes.
 - Ids novos com UUID v7 (`uuid`), como no resto do sistema (ADR-0006).
+
+## Alteração 1 — blocos prontos de perfil
+
+- `packages/contracts/src/questionnaire.ts`: `PROFILE_KEYS` e campo opcional `profile` na pergunta; o snapshot recusa a mesma variável em duas perguntas.
+- `packages/contracts/src/profile-blocks.ts`: textos e códigos padrão (`PROFILE_TEMPLATES`), blocos `basic` e `full` e `buildProfileBlock` (ids novos, pula variáveis presentes, código livre com sufixo `_2`).
+- Painel: ação `insertMany` no reducer; cartão "Inserir bloco pronto" na coluna das perguntas; selo "Variável de perfil" com "Desvincular" na pergunta.

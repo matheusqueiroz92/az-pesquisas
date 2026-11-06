@@ -303,6 +303,27 @@ export function QuestionForm({
           </div>
         </div>
 
+        {q.profile ? (
+          <div
+            data-testid="profile-badge"
+            className="flex flex-wrap items-start justify-between gap-3 rounded-sm border border-info bg-info-soft/60 p-3"
+          >
+            <div className="text-sm">
+              <p className="font-semibold">{t.profileBlocks.badge(t.profiles[q.profile])}</p>
+              <p className="text-muted-foreground">{t.profileBlocks.badgeHint}</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                update({ profile: undefined });
+              }}
+            >
+              {t.profileBlocks.unlink}
+            </Button>
+          </div>
+        ) : null}
+
         <div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
           <TextField
             label={F.code}

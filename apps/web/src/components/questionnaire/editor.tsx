@@ -1,13 +1,14 @@
 'use client';
 
-import { lintQuestionnaire, QUESTION_TYPES } from '@az-pesquisas/contracts';
+import { buildProfileBlock, lintQuestionnaire, QUESTION_TYPES } from '@az-pesquisas/contracts';
 import type {
   LintIssue,
+  ProfileBlock,
   QuestionnaireDraft,
   QuestionnaireView,
   QuestionType,
 } from '@az-pesquisas/contracts';
-import { AlertTriangle, Check, CircleAlert, Loader2, Plus } from 'lucide-react';
+import { AlertTriangle, Check, CircleAlert, Loader2, Plus, UsersRound } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { v7 as uuidv7 } from 'uuid';
 
@@ -110,6 +111,9 @@ export function QuestionnaireEditor({ initial }: { initial: QuestionnaireView })
   );
   const [status, setStatus] = useState<SaveStatus>('saved');
   const [newType, setNewType] = useState<QuestionType>('single_choice');
+  const [block, setBlock] = useState<ProfileBlock>('basic');
+  const [blockPosition, setBlockPosition] = useState<'start' | 'end' | 'after'>('start');
+  const [blockMessage, setBlockMessage] = useState('');
 
   // Refs, not state: the save loop reads the latest values without re-rendering.
   const latest = useRef(draft);
@@ -213,6 +217,24 @@ export function QuestionnaireEditor({ initial }: { initial: QuestionnaireView })
     setSelectedId(question.id);
   };
 
+  const insertBlock = () => {
+    const current = latest.current.questions;
+    const questions = buildProfileBlock(block, current, newId);
+    if (questions.length === 0) {
+      setBlockMessage(t.profileBlocks.allPresent);
+      return;
+    }
+    const index =
+      blockPosition === 'start'
+        ? 0
+        : blockPosition === 'after' && selectedIndex >= 0
+          ? selectedIndex + 1
+          : current.length;
+    edit({ type: 'insertMany', questions, index });
+    setSelectedId(questions[0]?.id);
+    setBlockMessage(t.profileBlocks.inserted(questions.length));
+  };
+
   const removeSelected = () => {
     if (!selected || !window.confirm(Q.removeConfirm(selected.code))) {
       return;
@@ -292,6 +314,54 @@ export function QuestionnaireEditor({ initial }: { initial: QuestionnaireView })
                   <Plus aria-hidden />
                   {Q.add}
                 </Button>
+              </div>
+            )}
+            {readOnly ? null : (
+              <div className="flex flex-col gap-2 rounded-sm border border-dashed border-border-strong p-3">
+                <p className="text-sm font-semibold">{t.profileBlocks.title}</p>
+                <p className="text-xs text-muted-foreground">{t.profileBlocks.hint}</p>
+                <label htmlFor="profile-block" className="sr-only">
+                  {t.profileBlocks.block}
+                </label>
+                <select
+                  id="profile-block"
+                  value={block}
+                  onChange={(event) => {
+                    setBlock(event.target.value === 'full' ? 'full' : 'basic');
+                  }}
+                  className="h-10 rounded-sm border border-border-strong bg-surface px-2.5 text-sm"
+                >
+                  {(['basic', 'full'] as const).map((key) => (
+                    <option key={key} value={key}>
+                      {t.profileBlocks.blocks[key]}
+                    </option>
+                  ))}
+                </select>
+                <label htmlFor="profile-block-position" className="text-xs font-semibold">
+                  {t.profileBlocks.position}
+                </label>
+                <select
+                  id="profile-block-position"
+                  value={blockPosition}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setBlockPosition(value === 'end' || value === 'after' ? value : 'start');
+                  }}
+                  className="h-10 rounded-sm border border-border-strong bg-surface px-2.5 text-sm"
+                >
+                  {(['start', 'end', 'after'] as const).map((key) => (
+                    <option key={key} value={key}>
+                      {t.profileBlocks.positions[key]}
+                    </option>
+                  ))}
+                </select>
+                <Button variant="secondary" onClick={insertBlock}>
+                  <UsersRound aria-hidden />
+                  {t.profileBlocks.insert}
+                </Button>
+                <p aria-live="polite" className="text-xs text-muted-foreground">
+                  {blockMessage}
+                </p>
               </div>
             )}
           </div>

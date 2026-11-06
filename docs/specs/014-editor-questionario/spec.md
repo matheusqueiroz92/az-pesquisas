@@ -105,6 +105,21 @@ Cada pesquisa tem um questionário. Ele é editado como **rascunho** e, na spec 
 - **Quando** tenta ler ou salvar o questionário
 - **Então** recebe 404 (outra organização) ou 403 (papel)
 
+## Alterações
+
+1. **2026-11-06 — blocos prontos de perfil** (pedido do Matheus). O editor ganha "Inserir bloco pronto":
+   - **Perfil básico:** sexo, faixa etária (16–24, 25–34, 35–44, 45–59, 60+) e escolaridade.
+   - **Perfil completo:** o básico mais renda familiar, religião, ocupação e zona urbana/rural.
+   - Entram no início, no fim ou depois da pergunta escolhida, como perguntas comuns e editáveis; perguntas de perfil que o questionário já tem não se repetem.
+   - Cada uma leva a **variável de perfil** (`profile`, campo opcional novo no contrato da spec 006). É por ela que a ponderação e os cruzamentos (018) acham "a pergunta de sexo", qualquer que seja o texto. Dá para desvincular. Duas perguntas com a mesma variável viram pendência (`PROFILE_REPEATED`).
+   - Só os modelos que vêm com o sistema; modelos próprios da empresa ficam para depois.
+
+### CA-10 — Bloco pronto (alteração 1)
+
+- **Dado** um questionário com uma pergunta
+- **Quando** o coordenador insere o "Perfil básico" no início e depois tenta inserir de novo
+- **Então** entram SEXO, FAIXA_ETARIA e ESCOLARIDADE antes da pergunta existente, editáveis e marcadas como variáveis de perfil; na segunda vez nada é repetido
+
 ## Fora de escopo
 
 - Publicar versão, comparar versões, avisos de comparabilidade e desativar perguntas em vez de apagar (015).

@@ -104,6 +104,10 @@ O **motor** que aplica o questionário (ordem das perguntas, avaliação da lóg
 - **Quando** convertidos para JSON Schema (base do OpenAPI, ADR-0012)
 - **Então** a conversão funciona para todos
 
+## Alterações
+
+1. **2026-11-06 — variável de perfil** (spec 014, alteração 1): toda pergunta pode ter `profile` (`sex`, `age_group`, `education`, `family_income`, `religion`, `occupation`, `area`), opcional; um questionário não repete a mesma variável. Campo novo e opcional: snapshots antigos continuam válidos.
+
 ## Fora de escopo
 
 - Motor do questionário (avaliar `visibleIf`, validar respostas contra o questionário, embaralhar): F1.

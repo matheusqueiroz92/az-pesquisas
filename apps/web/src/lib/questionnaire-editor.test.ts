@@ -1,4 +1,9 @@
-import { lintQuestionnaire, QUESTION_TYPES, QuestionnaireDraft } from '@az-pesquisas/contracts';
+import {
+  buildProfileBlock,
+  lintQuestionnaire,
+  QUESTION_TYPES,
+  QuestionnaireDraft,
+} from '@az-pesquisas/contracts';
 import type { DraftQuestion } from '@az-pesquisas/contracts';
 import { describe, expect, it } from 'vitest';
 
@@ -81,6 +86,20 @@ describe('creation', () => {
       });
     }
     expect(lintQuestionnaire(draft)).toEqual([]);
+  });
+});
+
+describe('profile blocks (spec 014, change 1)', () => {
+  it('inserts a block at the start, keeping what was there', () => {
+    const draft = build('text');
+    const block = buildProfileBlock('basic', draft.questions, ids(1000));
+    const next = editorReducer(draft, { type: 'insertMany', questions: block, index: 0 });
+    expect(next.questions.map((q) => q.code)).toEqual([
+      'SEXO',
+      'FAIXA_ETARIA',
+      'ESCOLARIDADE',
+      'P01',
+    ]);
   });
 });
 

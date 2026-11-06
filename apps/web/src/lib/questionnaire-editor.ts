@@ -84,6 +84,7 @@ export const newQuestion = (type: QuestionType, code: string, newId: NewId): Dra
 
 export type EditorAction =
   | { type: 'insert'; question: DraftQuestion; index: number }
+  | { type: 'insertMany'; questions: readonly DraftQuestion[]; index: number }
   | { type: 'update'; id: string; patch: Partial<DraftQuestion> }
   | { type: 'remove'; id: string }
   | { type: 'duplicate'; id: string; newId: NewId }
@@ -138,6 +139,11 @@ export const editorReducer = (
     case 'insert': {
       const questions = [...draft.questions];
       questions.splice(action.index, 0, action.question);
+      return { ...draft, questions };
+    }
+    case 'insertMany': {
+      const questions = [...draft.questions];
+      questions.splice(action.index, 0, ...action.questions);
       return { ...draft, questions };
     }
     case 'update': {

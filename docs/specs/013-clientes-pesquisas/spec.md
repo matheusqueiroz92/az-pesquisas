@@ -78,9 +78,15 @@ Esta spec cria o cadastro. O questionário é a 014; a publicação de versão (
 
 ### CA-06 — Regras de período e município
 
-- **Dado** fim de campo antes do início, um código IBGE que não é da Bahia ou um município repetido
+- **Dado** fim de campo antes do início, um código que não é de município do IBGE ou um município repetido
 - **Quando** enviados
 - **Então** são recusados apontando o campo
+
+### CA-06b — Município de outro estado (alteração 1)
+
+- **Dado** uma pesquisa em Itapetinga (BA) e Montes Claros (MG)
+- **Quando** o coordenador troca a UF no seletor e escolhe o município de Minas
+- **Então** a pesquisa guarda os dois, e o de fora da Bahia aparece como "Montes Claros (MG)"
 
 ### CA-07 — Arquivar, desarquivar, excluir
 
@@ -105,6 +111,10 @@ Esta spec cria o cadastro. O questionário é a 014; a publicação de versão (
 - **Dado** um coordenador no painel
 - **Quando** cadastra cliente e pesquisa pelas telas Clientes e Pesquisas
 - **Então** os dois aparecem nas listas (teste de ponta a ponta)
+
+## Alterações
+
+1. **2026-11-06 — municípios de qualquer estado** (pedido do Matheus: a empresa já fez pesquisas no norte de Minas, perto da divisa). Em vez de digitar o nome à mão, o seletor ganhou a escolha da UF e usa a lista completa do IBGE, para manter o código oficial de cada município (necessário para população, mapas e ponderação nos resultados). Migração `0006` troca a checagem do banco de "só Bahia" para "código de município do Brasil".
 
 ## Fora de escopo
 

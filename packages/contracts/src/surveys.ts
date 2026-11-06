@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { Email, Id, IsoDateTime } from './common.js';
-import { isBahiaMunicipality } from './municipalities-ba.js';
+import { isMunicipality, MAX_SURVEY_MUNICIPALITIES } from './municipalities.js';
 
 // ---------------------------------------------------------------- shared pieces
 
@@ -161,8 +161,8 @@ const SurveyTitle = z.string().trim().min(3).max(160);
 const IsoDate = z.iso.date();
 
 const MunicipalityCodes = z
-  .array(z.int().refine(isBahiaMunicipality, { message: 'Not a municipality of Bahia' }))
-  .max(417)
+  .array(z.int().refine(isMunicipality, { message: 'Not an IBGE municipality code' }))
+  .max(MAX_SURVEY_MUNICIPALITIES)
   .refine((codes) => new Set(codes).size === codes.length, {
     message: 'Repeated municipality',
   });

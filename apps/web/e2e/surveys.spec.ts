@@ -39,7 +39,12 @@ test.describe('Clientes e pesquisas (spec 013)', () => {
     await search.press('Enter');
     await search.fill('Itambé');
     await page.getByLabel('Itambé', { exact: true }).check();
-    await expect(page.getByTestId('municipality-picker')).toContainText('2 escolhidos');
+    // A municipality in the north of Minas Gerais (spec 013, change 1).
+    await page.getByLabel('Estado (UF)').selectOption('MG');
+    await search.fill('Montes Claros');
+    await search.press('Enter');
+    await expect(page.getByTestId('municipality-picker')).toContainText('3 escolhidos');
+    await expect(page.getByRole('button', { name: 'Remover Montes Claros (MG)' })).toBeVisible();
     await page.getByLabel('Localização (GPS)').selectOption('required');
     await page.getByRole('button', { name: 'Criar pesquisa' }).click();
 

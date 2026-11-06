@@ -81,7 +81,7 @@ Erros novos: `CLIENT_NOT_FOUND` (404, também quando o `clientId` do corpo não 
 
 - `TaxId`: aceita com ou sem máscara, devolve só dígitos; CPF (11) ou CNPJ (14) com dígitos verificadores.
 - `SurveyTse`: `{ registrationNumber, statisticianName, statisticianConre, contractorName, contractValueCents }`, todos anuláveis. `tse: null` = não registrada; objeto = registrada no TSE. Enviar `tse` com tipo diferente de eleitoral é recusado.
-- `municipalityCodes`: códigos de `BAHIA_MUNICIPALITIES` (417 municípios, `municipalities-ba.ts`, gerado a partir da tabela do IBGE), sem repetição.
+- `municipalityCodes`: códigos de `MUNICIPALITIES` (todos os municípios do Brasil, `municipalities-data.ts`, gerado a partir da tabela do IBGE), sem repetição, até 1.000. A UF sai dos dois primeiros dígitos do código.
 - `settings`: mesmo formato de `SurveySettings` do snapshot (spec 006), com `consentText` anulável. A 015 copia esses valores para o snapshot.
 - Corpos com `strictObject` (nada de `organizationId` vindo do cliente).
 
@@ -90,5 +90,5 @@ Erros novos: `CLIENT_NOT_FOUND` (404, também quando o `clientId` do corpo não 
 - Menu ganha **Pesquisas** e **Clientes** (permissão `surveys.manage`).
 - `/clientes`: tabela com nome, documento formatado, contato e número de pesquisas; criar/editar em diálogo; excluir com confirmação.
 - `/pesquisas`: tabela com busca por título (sem diferenciar acentos) e filtro "Arquivadas" (parâmetros de URL); cada linha abre a pesquisa.
-- `/pesquisas/nova` e `/pesquisas/[id]`: formulário em seções (Identificação, Campo, Municípios, Coleta no app, TSE). O seletor de municípios tem busca e mostra os escolhidos como etiquetas. A seção TSE só aparece no tipo eleitoral. Na página da pesquisa ficam as ações: duplicar, arquivar/desarquivar e excluir (só rascunho). Pesquisa arquivada aparece só para leitura.
+- `/pesquisas/nova` e `/pesquisas/[id]`: formulário em seções (Identificação, Campo, Municípios, Coleta no app, TSE). O seletor de municípios tem escolha de UF (começa em BA) e busca, e mostra os escolhidos como etiquetas (com a UF quando não é da Bahia). A seção TSE só aparece no tipo eleitoral. Na página da pesquisa ficam as ações: duplicar, arquivar/desarquivar e excluir (só rascunho). Pesquisa arquivada aparece só para leitura.
 - Duração mínima é digitada em minutos no painel e enviada em segundos.

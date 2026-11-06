@@ -1,3 +1,4 @@
+import { HOME_UF, municipalityByCode } from '@az-pesquisas/contracts';
 import type { SurveyStatus, SurveySummary } from '@az-pesquisas/contracts';
 
 /** Lower-case without accents, for searches typed without them ("avaliacao"). */
@@ -31,3 +32,14 @@ export const STATUS_TONE: Record<SurveyStatus, 'neutral' | 'success' | 'info' | 
 /** First value of a search param. */
 export const param = (value: string | string[] | undefined): string =>
   (Array.isArray(value) ? value[0] : value) ?? '';
+
+/** "Itapetinga" for the home state, "Montes Claros (MG)" for the others. */
+export const municipalityLabel = (code: number): string => {
+  const municipality = municipalityByCode(code);
+  if (!municipality) {
+    return String(code);
+  }
+  return municipality.uf === HOME_UF
+    ? municipality.name
+    : `${municipality.name} (${municipality.uf})`;
+};

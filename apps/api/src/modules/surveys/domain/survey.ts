@@ -1,6 +1,10 @@
 import { err, ok } from '@az-pesquisas/core';
 import type { Result } from '@az-pesquisas/core';
-import { isBahiaMunicipality, MAX_TARGET_INTERVIEWS } from '@az-pesquisas/contracts';
+import {
+  isMunicipality,
+  MAX_SURVEY_MUNICIPALITIES,
+  MAX_TARGET_INTERVIEWS,
+} from '@az-pesquisas/contracts';
 import type {
   SurveySettingsInput,
   SurveyStatus,
@@ -15,7 +19,7 @@ export interface SurveyFields {
   readonly type: SurveyType;
   /** null: the organization's own survey. */
   readonly clientId: string | null;
-  /** IBGE codes of municipalities of Bahia. */
+  /** IBGE codes of municipalities (any state). */
   readonly municipalityCodes: readonly number[];
   /** YYYY-MM-DD */
   readonly fieldStart: string | null;
@@ -61,7 +65,11 @@ const normalize = (fields: SurveyFields): SurveyFields => {
     throw new TypeError('Invalid survey title');
   }
   const codes = fields.municipalityCodes;
-  if (!codes.every(isBahiaMunicipality) || new Set(codes).size !== codes.length) {
+  if (
+    codes.length > MAX_SURVEY_MUNICIPALITIES ||
+    !codes.every(isMunicipality) ||
+    new Set(codes).size !== codes.length
+  ) {
     throw new TypeError('Invalid municipalities');
   }
   if (fields.fieldStart && fields.fieldEnd && fields.fieldEnd < fields.fieldStart) {

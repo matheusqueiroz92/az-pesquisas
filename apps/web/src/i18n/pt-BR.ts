@@ -167,7 +167,8 @@ export const t = {
       target: 'Meta de entrevistas',
       targetHint: 'Opcional.',
       municipalitiesHint:
-        'Municípios da Bahia onde a pesquisa vai a campo. Pode ficar vazio no rascunho.',
+        'Municípios onde a pesquisa vai a campo. Para outro estado, troque a UF ao lado da busca. Pode ficar vazio no rascunho.',
+      municipalityState: 'Estado (UF)',
       municipalitySearch: 'Buscar município',
       municipalitySelected: (n: number) =>
         n === 0 ? 'Nenhum município escolhido' : n === 1 ? '1 escolhido' : `${n} escolhidos`,

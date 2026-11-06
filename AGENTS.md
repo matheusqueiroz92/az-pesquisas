@@ -154,7 +154,7 @@ Modelos em `docs/templates/`. Numeração das specs: `docs/specs/NNN-nome-curto/
 - Contexto `surveys` (`apps/api/src/modules/surveys`): clientes e pesquisas; o questionário (014) entra no mesmo contexto.
 - Situações da pesquisa: por enquanto só `draft` ⇄ `archived`. Só rascunho é editado ou excluído; "em campo" e "encerrada" chegam com publicação e atribuição (015/016), que ampliam essas regras.
 - Dados do TSE só existem em pesquisa eleitoral marcada como registrada (`tse` não nulo); o domínio apaga e o banco recusa nos outros casos.
-- Municípios: `BAHIA_MUNICIPALITIES` em `packages/contracts/src/municipalities-ba.ts` (417, código IBGE). A lista é gerada; não edite à mão.
+- Municípios: `MUNICIPALITIES` em `packages/contracts/src/municipalities.ts` (todos do Brasil, código IBGE; a UF são os dois primeiros dígitos). Os dados ficam em `municipalities-data.ts`, gerado; não edite à mão. O painel começa na Bahia (`HOME_UF`).
 - Valores em dinheiro em centavos inteiros (`bigint` no banco), nunca ponto flutuante.
 
 ## Contratos com o app (spec 006)

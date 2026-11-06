@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { BAHIA_MUNICIPALITIES, isBahiaMunicipality } from './municipalities-ba.js';
+import {
+  isMunicipality,
+  municipalitiesOf,
+  municipalityByCode,
+  MUNICIPALITIES,
+  STATES,
+  ufOfMunicipalityCode,
+} from './municipalities.js';
 import {
   CreateClientRequest,
   CreateSurveyRequest,
@@ -35,18 +42,25 @@ describe('TaxId', () => {
   });
 });
 
-describe('Bahia municipalities', () => {
-  it('has the 417 municipalities with unique 7-digit IBGE codes of Bahia (29)', () => {
-    expect(BAHIA_MUNICIPALITIES).toHaveLength(417);
-    const codes = new Set(BAHIA_MUNICIPALITIES.map((m) => m.code));
-    expect(codes.size).toBe(417);
-    expect([...codes].every((c) => c >= 2900000 && c < 3000000)).toBe(true);
+describe('municipalities (IBGE)', () => {
+  it('has every municipality of Brazil with a unique 7-digit code of a real state', () => {
+    expect(MUNICIPALITIES.length).toBeGreaterThan(5560);
+    expect(new Set(MUNICIPALITIES.map((m) => m.code)).size).toBe(MUNICIPALITIES.length);
+    expect(MUNICIPALITIES.every((m) => ufOfMunicipalityCode(m.code) === m.uf)).toBe(true);
+    expect(STATES).toHaveLength(27);
   });
 
-  it('knows Salvador and Itapetinga, not São Paulo', () => {
-    expect(isBahiaMunicipality(2927408)).toBe(true);
-    expect(isBahiaMunicipality(2916401)).toBe(true);
-    expect(isBahiaMunicipality(3550308)).toBe(false);
+  it('knows Bahia and the north of Minas Gerais', () => {
+    expect(municipalitiesOf('BA')).toHaveLength(417);
+    expect(municipalityByCode(2916401)).toEqual({ code: 2916401, name: 'Itapetinga', uf: 'BA' });
+    expect(municipalityByCode(3143302)).toEqual({ code: 3143302, name: 'Montes Claros', uf: 'MG' });
+    expect(isMunicipality(5300108)).toBe(true);
+  });
+
+  it('refuses codes that are not municipalities', () => {
+    expect(isMunicipality(2900000)).toBe(false);
+    expect(isMunicipality(9912345)).toBe(false);
+    expect(ufOfMunicipalityCode(9912345)).toBeUndefined();
   });
 });
 
@@ -108,6 +122,13 @@ describe('CreateSurveyRequest', () => {
     });
   });
 
+  it('accepts municipalities of different states (spec 013, change 1)', () => {
+    expect(
+      CreateSurveyRequest.parse({ ...minimal, municipalityCodes: [2916401, 3143302] })
+        .municipalityCodes,
+    ).toEqual([2916401, 3143302]);
+  });
+
   it('accepts an electoral survey registered at the TSE', () => {
     const parsed = CreateSurveyRequest.parse({
       ...minimal,
@@ -138,7 +159,7 @@ describe('CreateSurveyRequest', () => {
     ['malformed TSE number', { ...minimal, type: 'electoral', tse: { registrationNumber: '123' } }],
     ['negative contract value', { ...minimal, type: 'electoral', tse: { contractValueCents: -1 } }],
     ['field end before start', { ...minimal, fieldStart: '2026-11-20', fieldEnd: '2026-11-10' }],
-    ['municipality outside Bahia', { ...minimal, municipalityCodes: [3550308] }],
+    ['an unknown municipality code', { ...minimal, municipalityCodes: [2900000] }],
     ['repeated municipality', { ...minimal, municipalityCodes: [2916401, 2916401] }],
     ['zero target', { ...minimal, targetInterviews: 0 }],
     ['unknown type', { ...minimal, type: 'census' }],

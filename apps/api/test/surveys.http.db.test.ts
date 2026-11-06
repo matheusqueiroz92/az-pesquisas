@@ -283,10 +283,19 @@ describe('surveys (spec 013)', () => {
     expect(row).toEqual({ tse_registered: false, tse_statistician_name: null });
   });
 
+  it('CA-06: municipalities of other states are accepted (change 1)', async () => {
+    const res = await call('POST', '/v1/surveys', {
+      as: 'coordinator',
+      body: { ...SURVEY, municipalityCodes: [ITAPETINGA, 3143302] },
+    });
+    expect(res.statusCode).toBe(201);
+    expect(res.json()).toMatchObject({ municipalityCodes: [ITAPETINGA, 3143302] });
+  });
+
   it('CA-06: period, municipality and TSE format are validated', async () => {
     for (const body of [
       { ...SURVEY, fieldEnd: '2026-11-01' },
-      { ...SURVEY, municipalityCodes: [3550308] },
+      { ...SURVEY, municipalityCodes: [2900000] },
       { ...SURVEY, municipalityCodes: [ITAPETINGA, ITAPETINGA] },
       { ...SURVEY, type: 'electoral', tse: { registrationNumber: '01234' } },
       { ...SURVEY, organizationId: '0193a000-0000-7000-8000-000000000000' },
@@ -376,6 +385,18 @@ describe('database guarantees (migration 0005)', () => {
         [orgB, clientOfA?.id],
       ),
     ).rejects.toThrow(/surveys_client_fk/);
+  });
+
+  it('a municipality code outside the IBGE range is refused', async () => {
+    const orgA = await orgOf('a');
+    await expect(
+      owner(
+        `INSERT INTO surveys (id, organization_id, title, type, status, municipality_codes,
+           gps_mode, audio, min_duration_sec)
+         VALUES (gen_random_uuid(), $1, 'Pesquisa', 'market', 'draft', '{9912345}', 'off', 'off', 0)`,
+        [orgA],
+      ),
+    ).rejects.toThrow(/surveys_municipalities_check/);
   });
 
   it('TSE data is refused on a survey that is not electoral', async () => {

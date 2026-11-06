@@ -51,6 +51,12 @@ describe('Survey.create', () => {
     });
   });
 
+  it('accepts municipalities of other states, like the north of Minas Gerais', () => {
+    expect(
+      create({ municipalityCodes: [ITAPETINGA, 3143302] }).toSnapshot().municipalityCodes,
+    ).toEqual([ITAPETINGA, 3143302]);
+  });
+
   it('drops TSE data from a survey that is not electoral', () => {
     expect(create({ tse: TSE }).toSnapshot().tse).toBeNull();
     expect(electoral().toSnapshot().tse).toEqual(TSE);
@@ -59,7 +65,7 @@ describe('Survey.create', () => {
   it.each([
     ['a short title', { title: ' AB ' }],
     ['field end before start', { fieldStart: '2026-11-20', fieldEnd: '2026-11-10' }],
-    ['a municipality outside Bahia', { municipalityCodes: [3550308] }],
+    ['an unknown municipality code', { municipalityCodes: [2900000] }],
     ['a repeated municipality', { municipalityCodes: [ITAPETINGA, ITAPETINGA] }],
     ['a zero target', { targetInterviews: 0 }],
   ])('refuses %s', (_case, overrides) => {

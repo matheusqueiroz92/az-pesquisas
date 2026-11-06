@@ -1,7 +1,7 @@
 import type { SurveySummary } from '@az-pesquisas/contracts';
 import { describe, expect, it } from 'vitest';
 
-import { filterSurveys, foldText, param } from './surveys';
+import { filterSurveys, foldText, municipalityLabel, param } from './surveys';
 
 const survey = (title: string, status: SurveySummary['status']): SurveySummary => ({
   id: '0193a000-0000-7000-8000-000000000001',
@@ -49,5 +49,13 @@ describe('helpers', () => {
     expect(param(['a', 'b'])).toBe('a');
     expect(param(undefined)).toBe('');
     expect(param('x')).toBe('x');
+  });
+});
+
+describe('municipalityLabel', () => {
+  it('names municipalities, with the UF outside Bahia', () => {
+    expect(municipalityLabel(2916401)).toBe('Itapetinga');
+    expect(municipalityLabel(3143302)).toBe('Montes Claros (MG)');
+    expect(municipalityLabel(1234567)).toBe('1234567');
   });
 });

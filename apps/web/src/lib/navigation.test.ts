@@ -8,6 +8,7 @@ describe('navigationFor (spec 007, rule 12)', () => {
       '/',
       '/pesquisas',
       '/clientes',
+      '/dispositivos',
       '/usuarios',
       '/minha-conta',
     ]);
@@ -18,6 +19,7 @@ describe('navigationFor (spec 007, rule 12)', () => {
       '/',
       '/pesquisas',
       '/clientes',
+      '/dispositivos',
       '/minha-conta',
     ]);
   });

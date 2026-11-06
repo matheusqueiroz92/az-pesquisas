@@ -2,6 +2,7 @@ export * from './auth.js';
 export * from './azp.js';
 export * from './common.js';
 export * from './errors.js';
+export * from './devices.js';
 export * from './interview.js';
 export * from './municipalities.js';
 export * from './permissions.js';

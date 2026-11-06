@@ -1,18 +1,23 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
+import type { PairedDevice, PairError } from '../application/device-service';
 import type { SignInError } from '../application/session-service';
 import type { Session } from '../domain/session';
-import { openAppDatabase, sessionService } from './services';
+import { deviceService, openAppDatabase, sessionService } from './services';
 
 export type AppState =
   | { readonly status: 'loading' }
   | { readonly status: 'database-error'; readonly detail: string }
+  | { readonly status: 'unpaired'; readonly cipherVersion: string }
   | { readonly status: 'signed-out'; readonly cipherVersion: string }
   | { readonly status: 'signed-in'; readonly cipherVersion: string; readonly session: Session };
 
 interface SessionContextValue {
   readonly state: AppState;
+  /** The organization link of this installation, when paired (spec 016). */
+  readonly device: PairedDevice | null;
+  readonly pair: (code: string) => Promise<PairError | null>;
   readonly signIn: (email: string, password: string) => Promise<SignInError | null>;
   readonly signOut: () => Promise<void>;
 }
@@ -26,22 +31,38 @@ const SessionContext = createContext<SessionContextValue | null>(null);
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppState>({ status: 'loading' });
   const [cipherVersion, setCipherVersion] = useState('');
+  const [device, setDevice] = useState<PairedDevice | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    // Read through a function: TypeScript keeps `cancelled` narrowed across awaits.
+    const isCancelled = () => cancelled;
     const start = async () => {
       try {
         const opened = await openAppDatabase();
-        const session = await sessionService.restore();
+        // Not paired yet: nothing else until this device belongs to an organization (spec 016).
+        const paired = await deviceService.current();
+        const session = paired ? await sessionService.restore() : null;
         if (cancelled) {
           return;
         }
         setCipherVersion(opened.cipherVersion);
+        setDevice(paired);
+        if (!paired) {
+          setState({ status: 'unpaired', cipherVersion: opened.cipherVersion });
+          return;
+        }
         setState(
           session
             ? { status: 'signed-in', cipherVersion: opened.cipherVersion, session }
             : { status: 'signed-out', cipherVersion: opened.cipherVersion },
         );
+        // With network, tell the API we are alive; a revoked device goes back to pairing.
+        if ((await deviceService.check()) === 'revoked' && !isCancelled()) {
+          await sessionService.signOut();
+          setDevice(null);
+          setState({ status: 'unpaired', cipherVersion: opened.cipherVersion });
+        }
       } catch (error: unknown) {
         // The message never carries the key (encrypted-database.ts); it helps support.
         const detail = error instanceof Error ? `${error.name}: ${error.message}` : 'Unknown error';
@@ -86,7 +107,23 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(() => sessionService.signOut(), []);
 
-  const value = useMemo(() => ({ state, signIn, signOut }), [state, signIn, signOut]);
+  const pair = useCallback(
+    async (code: string) => {
+      const result = await deviceService.pair(code);
+      if (!result.ok) {
+        return result.error;
+      }
+      setDevice(result.value);
+      setState({ status: 'signed-out', cipherVersion });
+      return null;
+    },
+    [cipherVersion],
+  );
+
+  const value = useMemo(
+    () => ({ state, device, pair, signIn, signOut }),
+    [state, device, pair, signIn, signOut],
+  );
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 }
 

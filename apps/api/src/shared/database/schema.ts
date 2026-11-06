@@ -8,4 +8,10 @@ export {
   questionnaireVersions,
   surveys,
 } from '../../modules/surveys/index.js';
+export {
+  devicePairings,
+  devices,
+  surveyDevices,
+  surveyInterviewers,
+} from '../../modules/devices/index.js';
 export { outboxEvents } from '../outbox/schema.js';

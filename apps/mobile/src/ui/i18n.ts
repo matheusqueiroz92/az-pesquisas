@@ -11,6 +11,18 @@ export const t = {
     lockoutHint: 'Se você errou a senha várias vezes, aguarde 15 minutos antes de tentar de novo.',
     server: 'Servidor',
   },
+  pair: {
+    title: 'Vincular este aparelho',
+    intro:
+      'Peça ao coordenador para abrir Dispositivos no painel e clicar em "Vincular dispositivo". Digite aqui o código de 6 dígitos que aparecer.',
+    code: 'Código de vinculação',
+    submit: 'Vincular',
+    submitting: 'Vinculando…',
+    invalidCode: 'Código inválido ou vencido. Confira os 6 dígitos ou peça um código novo.',
+    offline: 'Sem conexão com o servidor. A vinculação precisa de internet.',
+    rateLimited: 'Muitas tentativas. Aguarde um minuto e tente de novo.',
+    server: 'O servidor não respondeu como esperado. Tente de novo em instantes.',
+  },
   errors: {
     invalidCredentials: 'E-mail ou senha incorretos.',
     rateLimited: 'Muitas tentativas. Aguarde um minuto e tente de novo.',
@@ -31,6 +43,7 @@ export const t = {
     email: 'E-mail',
     role: 'Papel',
     device: 'Este aparelho',
+    organization: 'Organização',
     server: 'Servidor',
     version: 'Versão do app',
     database: 'Banco local',

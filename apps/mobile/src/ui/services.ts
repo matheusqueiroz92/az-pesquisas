@@ -1,8 +1,15 @@
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
+import { createDeviceService } from '../application/device-service';
+import type { DeviceInfo } from '../application/device-service';
 import { createSessionService } from '../application/session-service';
 import { createHttpAuthGateway } from '../infrastructure/http-auth-gateway';
-import { createSecureSessionStore } from '../infrastructure/secure-storage';
+import { createHttpDeviceGateway } from '../infrastructure/http-device-gateway';
+import {
+  createSecureDeviceStore,
+  createSecureSessionStore,
+} from '../infrastructure/secure-storage';
 import { expoSecureKeyValue } from '../infrastructure/expo/secure-key-value';
 
 /**
@@ -18,6 +25,31 @@ export const sessionService = createSessionService({
   gateway: createHttpAuthGateway({ apiUrl: API_URL, fetch: (url, init) => fetch(url, init) }),
   store: createSecureSessionStore(expoSecureKeyValue),
   clock: { now: () => Date.now() },
+});
+
+const constants = Platform.constants as {
+  readonly Brand?: string;
+  readonly Model?: string;
+  readonly interfaceIdiom?: string;
+};
+
+/** What the API records about this device when it is paired (spec 016 rule 3). */
+const deviceInfo: DeviceInfo = {
+  platform: Platform.OS === 'ios' ? 'ios' : 'android',
+  model:
+    Platform.OS === 'ios'
+      ? constants.interfaceIdiom === 'pad'
+        ? 'iPad'
+        : 'iPhone'
+      : [constants.Brand, constants.Model].filter(Boolean).join(' ') || 'Android',
+  osVersion: String(Platform.Version),
+  appVersion: APP_VERSION,
+};
+
+export const deviceService = createDeviceService({
+  gateway: createHttpDeviceGateway({ apiUrl: API_URL, fetch: (url, init) => fetch(url, init) }),
+  store: createSecureDeviceStore(expoSecureKeyValue),
+  info: deviceInfo,
 });
 
 export { openAppDatabase } from '../infrastructure/expo/database';

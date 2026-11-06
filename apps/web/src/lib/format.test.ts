@@ -5,6 +5,7 @@ import {
   formatDate,
   formatDateTime,
   formatInteger,
+  formatPairingCode,
   formatPeriod,
   formatTaxId,
   parseBrl,
@@ -71,5 +72,11 @@ describe('money', () => {
 describe('formatDate edge', () => {
   it('does not crash on a malformed date', () => {
     expect(formatDate('2026')).toBe('//2026');
+  });
+});
+
+describe('formatPairingCode', () => {
+  it('splits the code in two groups', () => {
+    expect(formatPairingCode('123456')).toBe('123 456');
   });
 });

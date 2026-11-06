@@ -1,8 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import {
+  createSecureDeviceStore,
   createSecureSessionStore,
   DATABASE_KEY,
+  DEVICE_KEY,
   getOrCreateDatabaseKey,
   SESSION_KEY,
 } from './secure-storage';
@@ -56,6 +58,32 @@ describe('SecureSessionStore', () => {
       const kv = memoryKv({ [SESSION_KEY]: bad });
       expect(await createSecureSessionStore(kv).load()).toBeNull();
       expect(kv.data.has(SESSION_KEY)).toBe(false);
+    }
+  });
+});
+
+const DEVICE = {
+  deviceId: '0190a5c4-0000-7000-8000-000000000003',
+  deviceToken: 'd'.repeat(43),
+  organization: { id: '0190a5c4-0000-7000-8000-000000000002', name: 'Instituto AZ' },
+};
+
+describe('SecureDeviceStore', () => {
+  it('saves, loads and clears the pairing', async () => {
+    const kv = memoryKv();
+    const store = createSecureDeviceStore(kv);
+    expect(await store.load()).toBeNull();
+    await store.save(DEVICE);
+    expect(await store.load()).toEqual(DEVICE);
+    await store.clear();
+    expect(kv.data.has(DEVICE_KEY)).toBe(false);
+  });
+
+  it('drops a corrupt entry: the app asks for a new code', async () => {
+    for (const bad of ['{not json', JSON.stringify({ deviceId: 'x' })]) {
+      const kv = memoryKv({ [DEVICE_KEY]: bad });
+      expect(await createSecureDeviceStore(kv).load()).toBeNull();
+      expect(kv.data.has(DEVICE_KEY)).toBe(false);
     }
   });
 });

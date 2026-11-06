@@ -19,7 +19,7 @@ export function SurveyHeader({
   actions,
 }: {
   survey: SurveyView;
-  current: 'survey' | 'questionnaire' | 'versions';
+  current: 'survey' | 'questionnaire' | 'versions' | 'team';
   actions?: ReactNode;
 }) {
   const tabs = [
@@ -30,6 +30,7 @@ export function SurveyHeader({
       label: t.questionnaire.tabQuestionnaire,
     },
     { key: 'versions', href: `/pesquisas/${survey.id}/versoes`, label: t.versions.tab },
+    { key: 'team', href: `/pesquisas/${survey.id}/equipe`, label: t.team.tab },
   ] as const;
   return (
     <>

@@ -17,7 +17,7 @@ function Row({ label, value, mono = false }: { label: string; value: string; mon
 }
 
 export function AccountScreen() {
-  const { state, signOut } = useSession();
+  const { state, device, signOut } = useSession();
   if (state.status !== 'signed-in') {
     return null;
   }
@@ -32,6 +32,7 @@ export function AccountScreen() {
 
       <Text style={styles.section}>{t.account.device}</Text>
       <View style={styles.card}>
+        {device ? <Row label={t.account.organization} value={device.organization.name} /> : null}
         <Row label={t.account.server} value={API_URL} mono />
         <Row label={t.account.version} value={APP_VERSION} mono />
         <View style={styles.row}>

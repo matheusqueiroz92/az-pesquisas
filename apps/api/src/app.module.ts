@@ -6,6 +6,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { HealthController } from './health/health.controller.js';
 import { READINESS_CHECKS } from './health/readiness.js';
 import type { ReadinessCheck } from './health/readiness.js';
+import { DevicesModule } from './modules/devices/presentation/index.js';
 import { IdentityModule } from './modules/identity/presentation/index.js';
 import { SurveysModule } from './modules/surveys/presentation/index.js';
 import { AuthGuard } from './shared/auth/auth.guard.js';
@@ -41,6 +42,7 @@ export class AppModule {
         ThrottlerModule.forRoot([DEFAULT_RATE_LIMIT]),
         IdentityModule,
         SurveysModule,
+        DevicesModule,
         ...(options.extraModules ?? []),
       ],
       controllers: [HealthController],

@@ -27,6 +27,7 @@ export const t = {
     home: 'Início',
     surveys: 'Pesquisas',
     clients: 'Clientes',
+    devices: 'Dispositivos',
     users: 'Usuários',
     account: 'Minha conta',
     logout: 'Sair',
@@ -69,6 +70,7 @@ export const t = {
       '/pesquisas':
         'Cadastre pesquisas com tipo, municípios, período de campo, meta e dados do TSE.',
       '/clientes': 'Prefeituras, empresas e partidos para quem as pesquisas são feitas.',
+      '/dispositivos': 'Vincule os tablets da equipe e veja quando cada um falou com o sistema.',
       '/usuarios':
         'Cadastre pesquisadores, coordenadores e analistas e defina o que cada um pode fazer.',
       '/minha-conta': 'Veja seus dados e troque sua senha.',
@@ -475,6 +477,52 @@ export const t = {
     shuffle: 'Opções em ordem aleatória',
     generated: (date: string) => `Documento gerado pelo AZ Pesquisas em ${date}.`,
   },
+  devices: {
+    title: 'Dispositivos',
+    intro:
+      'Tablets e celulares da equipe. Vincule cada aparelho uma vez; depois, escolha na aba Equipe de cada pesquisa quais aparelhos e pesquisadores vão a campo.',
+    pair: 'Vincular dispositivo',
+    pairTitle: 'Vincular um aparelho',
+    pairSteps:
+      'No aparelho, abra o app AZ Pesquisas e digite este código na tela "Vincular este aparelho".',
+    expiresIn: (minutes: number, seconds: number) =>
+      `Vale por mais ${String(minutes)}:${String(seconds).padStart(2, '0')}.`,
+    waiting: 'Aguardando o aparelho…',
+    paired: (name: string, model: string) => `Aparelho vinculado: ${name} (${model}).`,
+    expired: 'O código venceu. Gere outro.',
+    again: 'Gerar outro código',
+    close: 'Fechar',
+    empty: 'Nenhum aparelho vinculado ainda.',
+    device: 'Aparelho',
+    app: 'App',
+    lastSeen: 'Última comunicação',
+    surveys: 'Pesquisas',
+    noSurveys: 'Nenhuma',
+    pairedAt: 'Vinculado em',
+    active: 'Ativo',
+    revoked: 'Revogado',
+    rename: 'Renomear',
+    nickname: 'Apelido',
+    revoke: 'Revogar',
+    revokeTitle: (name: string) => `Revogar ${name}?`,
+    revokeBody:
+      'O aparelho deixa de falar com o sistema na hora e sai de todas as equipes. Para usá-lo de novo, será preciso vincular outra vez.',
+    count: (n: number) => (n === 1 ? 'aparelho' : 'aparelhos'),
+    platform: { android: 'Android', ios: 'iOS' },
+  },
+  team: {
+    tab: 'Equipe',
+    intro:
+      'Quem vai a campo com esta pesquisa. Na sincronização, cada aparelho marcado recebe a versão publicada do questionário e a lista dos pesquisadores marcados.',
+    devices: 'Aparelhos',
+    interviewers: 'Pesquisadores',
+    noDevices: 'Nenhum aparelho ativo. Vincule em Dispositivos.',
+    noInterviewers: 'Nenhum pesquisador ativo. Cadastre em Usuários, com o papel Pesquisador.',
+    save: 'Salvar equipe',
+    saved: 'Equipe salva.',
+    selected: (n: number) => (n === 1 ? '1 marcado' : `${n} marcados`),
+    locked: 'Pesquisa encerrada ou arquivada: a equipe fica como está.',
+  },
   fieldwork: {
     close: 'Encerrar campo',
     reopen: 'Reabrir campo',
@@ -591,6 +639,13 @@ const ERROR_MESSAGES: Record<ErrorCode, string> = {
     'Uma pergunta mudou de tipo desde a última versão. Crie uma pergunta nova em vez de mudar o tipo.',
   QUESTIONNAIRE_VERSION_NOT_FOUND: 'Versão não encontrada.',
   SURVEY_TSE_INCOMPLETE: 'Complete os dados do registro no TSE (aba Dados) antes de publicar.',
+  DEVICE_NOT_FOUND: 'Aparelho não encontrado.',
+  DEVICE_REVOKED: 'Este aparelho foi revogado.',
+  PAIRING_NOT_FOUND: 'Código de vinculação não encontrado.',
+  PAIRING_CODE_INVALID: 'Código inválido ou vencido.',
+  DEVICE_TOKEN_INVALID: 'Aparelho não reconhecido.',
+  INTERVIEWER_NOT_FOUND: 'Só pesquisadores ativos podem entrar na equipe.',
+  SURVEY_NOT_ASSIGNABLE: 'Pesquisa encerrada ou arquivada não recebe equipe nova.',
   SURVEY_FIELD_LOCKED:
     'Depois da primeira publicação, o tipo da pesquisa e o registro no TSE não podem mudar.',
 };

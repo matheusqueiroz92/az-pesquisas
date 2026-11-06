@@ -6,3 +6,5 @@ export {
   questionnaireVersions,
   surveys,
 } from './infrastructure/schema.js';
+export { surveyDirectory } from './infrastructure/directory.js';
+export type { SurveyRef } from './infrastructure/directory.js';

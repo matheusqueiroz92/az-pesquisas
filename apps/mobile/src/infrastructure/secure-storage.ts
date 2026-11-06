@@ -1,5 +1,6 @@
-import { TokenResponse } from '@az-pesquisas/contracts';
+import { PairDeviceResponse, TokenResponse } from '@az-pesquisas/contracts';
 
+import type { DeviceStore } from '../application/device-service';
 import type { SessionStore } from '../application/ports';
 import type { Session } from '../domain/session';
 
@@ -12,6 +13,7 @@ export interface SecureKeyValue {
 
 export const SESSION_KEY = 'az.session.v1';
 export const DATABASE_KEY = 'az.db-key.v1';
+export const DEVICE_KEY = 'az.device.v1';
 
 /** Session in the SecureStore (rule 5). A corrupt or outdated entry is dropped, not trusted. */
 export const createSecureSessionStore = (kv: SecureKeyValue): SessionStore => ({
@@ -47,3 +49,27 @@ export const getOrCreateDatabaseKey = async (
   await kv.set(DATABASE_KEY, key);
   return key;
 };
+
+/** The device link in the SecureStore (spec 016 rule 3). A corrupt entry means "not paired". */
+export const createSecureDeviceStore = (kv: SecureKeyValue): DeviceStore => ({
+  load: async () => {
+    const raw = await kv.get(DEVICE_KEY);
+    if (raw === null) {
+      return null;
+    }
+    try {
+      // Same shape the API returned when pairing (spec 006 contract).
+      const { deviceId, deviceToken, organization } = PairDeviceResponse.parse(JSON.parse(raw));
+      return {
+        deviceId,
+        deviceToken,
+        organization: { id: organization.id, name: organization.name },
+      };
+    } catch {
+      await kv.remove(DEVICE_KEY);
+      return null;
+    }
+  },
+  save: (device) => kv.set(DEVICE_KEY, JSON.stringify(device)),
+  clear: () => kv.remove(DEVICE_KEY),
+});

@@ -42,6 +42,8 @@ export const users = pgTable(
   (t) => [
     uniqueIndex('users_email_unique').on(t.email),
     index('users_organization_id_idx').on(t.organizationId),
+    // Target of composite FKs from other contexts (survey teams, spec 016).
+    uniqueIndex('users_organization_id_id_unique').on(t.organizationId, t.id),
   ],
 );
 

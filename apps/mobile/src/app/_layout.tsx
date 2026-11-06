@@ -38,6 +38,7 @@ function RootNavigator() {
     return <DatabaseErrorScreen detail={state.detail} />;
   }
   const signedIn = state.status === 'signed-in';
+  const unpaired = state.status === 'unpaired';
   return (
     <>
       <StatusBar style="light" />
@@ -45,8 +46,11 @@ function RootNavigator() {
         <Stack.Protected guard={signedIn}>
           <Stack.Screen name="(app)" />
         </Stack.Protected>
-        <Stack.Protected guard={!signedIn}>
+        <Stack.Protected guard={!signedIn && !unpaired}>
           <Stack.Screen name="entrar" />
+        </Stack.Protected>
+        <Stack.Protected guard={unpaired}>
+          <Stack.Screen name="vincular" />
         </Stack.Protected>
       </Stack>
     </>

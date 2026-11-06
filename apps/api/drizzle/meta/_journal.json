@@ -78,6 +78,20 @@
       "when": 1793990608706,
       "tag": "0010_questionnaire_versions_security",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793993969670,
+      "tag": "0011_devices",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793993988149,
+      "tag": "0012_devices_security",
+      "breakpoints": true
     }
   ]
 }

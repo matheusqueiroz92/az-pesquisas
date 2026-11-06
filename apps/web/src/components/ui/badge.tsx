@@ -5,6 +5,8 @@ import { cn } from '@/lib/cn';
 const TONES = {
   success: { pill: 'bg-success-soft text-success-foreground', dot: 'bg-success' },
   neutral: { pill: 'bg-muted text-muted-foreground', dot: 'bg-muted-foreground' },
+  info: { pill: 'bg-info-soft text-foreground', dot: 'bg-info' },
+  warning: { pill: 'bg-warning-soft text-warning-foreground', dot: 'bg-warning' },
 } as const;
 
 /** Status pill: dot + text, so the meaning never depends on color alone. */

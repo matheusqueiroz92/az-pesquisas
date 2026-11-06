@@ -89,5 +89,6 @@ Erros novos: `CLIENT_NOT_FOUND` (404, também quando o `clientId` do corpo não 
 
 - Menu ganha **Pesquisas** e **Clientes** (permissão `surveys.manage`).
 - `/clientes`: tabela com nome, documento formatado, contato e número de pesquisas; criar/editar em diálogo; excluir com confirmação.
-- `/pesquisas`: tabela com busca por título e filtro "Arquivadas" (parâmetros de URL); ações duplicar e arquivar.
-- `/pesquisas/nova` e `/pesquisas/[id]`: formulário em seções (Identificação, Campo, Municípios, Coleta no app, TSE). O seletor de municípios tem busca e mostra os escolhidos como etiquetas. A seção TSE só aparece no tipo eleitoral. Na página da pesquisa, arquivar/desarquivar e excluir (só rascunho).
+- `/pesquisas`: tabela com busca por título (sem diferenciar acentos) e filtro "Arquivadas" (parâmetros de URL); cada linha abre a pesquisa.
+- `/pesquisas/nova` e `/pesquisas/[id]`: formulário em seções (Identificação, Campo, Municípios, Coleta no app, TSE). O seletor de municípios tem busca e mostra os escolhidos como etiquetas. A seção TSE só aparece no tipo eleitoral. Na página da pesquisa ficam as ações: duplicar, arquivar/desarquivar e excluir (só rascunho). Pesquisa arquivada aparece só para leitura.
+- Duração mínima é digitada em minutos no painel e enviada em segundos.

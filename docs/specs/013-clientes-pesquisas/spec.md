@@ -1,6 +1,6 @@
 # Spec 013 — Clientes e pesquisas
 
-- Status: em revisão (PR)
+- Status: implementada (aguardando revisão)
 - Fase: F1
 - Aprovada por: Matheus (ordem da F1 combinada em 2026-11-05: 013 → 014 → 015 → 016)
 

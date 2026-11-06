@@ -8,6 +8,7 @@ export * from './permissions.js';
 export * from './questionnaire.js';
 export * from './questionnaire-draft.js';
 export * from './profile-blocks.js';
+export * from './questionnaire-versions.js';
 export * from './surveys.js';
 export * from './sync.js';
 export * from './users.js';

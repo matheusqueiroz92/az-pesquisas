@@ -7,10 +7,11 @@ import { createSurveysDeps } from '../infrastructure/surveys-deps.factory.js';
 import { ClientsController } from './clients.controller.js';
 import { QuestionnairesController } from './questionnaires.controller.js';
 import { SurveysController } from './surveys.controller.js';
+import { VersionsController } from './versions.controller.js';
 import { SURVEYS_DEPS } from './surveys.tokens.js';
 
 @Module({
-  controllers: [ClientsController, SurveysController, QuestionnairesController],
+  controllers: [ClientsController, SurveysController, QuestionnairesController, VersionsController],
   providers: [
     {
       provide: SURVEYS_DEPS,

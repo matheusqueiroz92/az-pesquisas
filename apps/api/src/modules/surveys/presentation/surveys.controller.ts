@@ -19,11 +19,13 @@ import { ZodValidationPipe } from '../../../shared/http/zod-validation.pipe.js';
 import type { SurveysDeps } from '../application/surveys-deps.js';
 import {
   archiveSurvey,
+  closeSurvey,
   createSurvey,
   deleteSurvey,
   duplicateSurvey,
   getSurvey,
   listSurveys,
+  reopenSurvey,
   unarchiveSurvey,
   updateSurvey,
 } from '../application/surveys.js';
@@ -105,6 +107,21 @@ export class SurveysController {
     @Param('id', IdParam) id: string,
   ): Promise<SurveyView> {
     return viewOf(await unarchiveSurvey(this.deps, actor, id));
+  }
+
+  @Post(':id/close')
+  @HttpCode(HttpStatus.OK)
+  async close(@CurrentActor() actor: Actor, @Param('id', IdParam) id: string): Promise<SurveyView> {
+    return viewOf(await closeSurvey(this.deps, actor, id));
+  }
+
+  @Post(':id/reopen')
+  @HttpCode(HttpStatus.OK)
+  async reopen(
+    @CurrentActor() actor: Actor,
+    @Param('id', IdParam) id: string,
+  ): Promise<SurveyView> {
+    return viewOf(await reopenSurvey(this.deps, actor, id));
   }
 
   @Post(':id/duplicate')

@@ -1,16 +1,18 @@
-import { count, eq, isNotNull } from 'drizzle-orm';
+import { and, count, desc, eq, isNotNull } from 'drizzle-orm';
 
 import { currentTx } from '../../../shared/database/transaction-context.js';
 import { Client } from '../domain/client.js';
+import type { QuestionnaireVersion } from '../domain/publication.js';
 import { Questionnaire } from '../domain/questionnaire.js';
 import type {
   ClientRepository,
   QuestionnaireRepository,
+  QuestionnaireVersionRepository,
   SurveyRepository,
 } from '../domain/repositories.js';
 import { Survey } from '../domain/survey.js';
 import type { SurveySnapshot } from '../domain/survey.js';
-import { clients, questionnaireDrafts, surveys } from './schema.js';
+import { clients, questionnaireDrafts, questionnaireVersions, surveys } from './schema.js';
 
 // Every query below runs in the tenant transaction (RLS on): no organization
 // filter is needed here for isolation, and none could bypass it.
@@ -25,6 +27,7 @@ const toSurveySnapshot = (row: SurveyRow): SurveySnapshot => ({
   title: row.title,
   type: row.type,
   status: row.status,
+  publishedVersion: row.publishedVersion,
   municipalityCodes: row.municipalityCodes,
   fieldStart: row.fieldStart,
   fieldEnd: row.fieldEnd,
@@ -55,6 +58,7 @@ const toSurveyRow = (s: SurveySnapshot): SurveyInsert => ({
   title: s.title,
   type: s.type,
   status: s.status,
+  publishedVersion: s.publishedVersion,
   municipalityCodes: [...s.municipalityCodes],
   fieldStart: s.fieldStart,
   fieldEnd: s.fieldEnd,
@@ -155,5 +159,34 @@ export const drizzleQuestionnaireRepository: QuestionnaireRepository = {
           updatedBy: values.updatedBy,
         },
       });
+  },
+};
+
+const versionsOf = (surveyId: string) =>
+  currentTx()
+    .select()
+    .from(questionnaireVersions)
+    .where(eq(questionnaireVersions.surveyId, surveyId))
+    .orderBy(desc(questionnaireVersions.number));
+
+export const drizzleQuestionnaireVersionRepository: QuestionnaireVersionRepository = {
+  latest: async (surveyId): Promise<QuestionnaireVersion | undefined> => {
+    const [row] = await versionsOf(surveyId).limit(1);
+    return row;
+  },
+  list: async (surveyId) => versionsOf(surveyId),
+  findByNumber: async (surveyId, number) => {
+    const [row] = await currentTx()
+      .select()
+      .from(questionnaireVersions)
+      .where(
+        and(eq(questionnaireVersions.surveyId, surveyId), eq(questionnaireVersions.number, number)),
+      );
+    return row;
+  },
+  add: async (version) => {
+    await currentTx()
+      .insert(questionnaireVersions)
+      .values({ ...version, changes: [...version.changes] });
   },
 };

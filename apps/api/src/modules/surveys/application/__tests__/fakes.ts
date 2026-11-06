@@ -1,5 +1,6 @@
 import { currentOrganizationId } from '../../../../shared/tenancy/tenant-context.js';
 import { Client } from '../../domain/client.js';
+import type { QuestionnaireVersion } from '../../domain/publication.js';
 import { Questionnaire } from '../../domain/questionnaire.js';
 import type { QuestionnaireSnapshotState } from '../../domain/questionnaire.js';
 import type { ClientSnapshot } from '../../domain/client.js';
@@ -64,6 +65,12 @@ export const createFakes = (options: { now?: Date } = {}) => {
   const surveys = new Table<SurveySnapshot>();
   // Keyed by survey id, like the table (survey_id is the primary key).
   const questionnaires = new Table<QuestionnaireSnapshotState & { id: string }>();
+  const versions = new Table<QuestionnaireVersion>();
+  const ofSurvey = (surveyId: string) =>
+    versions
+      .visible()
+      .filter((v) => v.surveyId === surveyId)
+      .sort((a, b) => b.number - a.number);
   const auditEntries: AuditEntry[] = [];
   const locks: string[] = [];
 
@@ -154,6 +161,22 @@ export const createFakes = (options: { now?: Date } = {}) => {
         return Promise.resolve();
       },
     },
+    versions: {
+      latest: (surveyId) => Promise.resolve(ofSurvey(surveyId)[0]),
+      list: (surveyId) => Promise.resolve(ofSurvey(surveyId)),
+      findByNumber: (surveyId, number) =>
+        Promise.resolve(ofSurvey(surveyId).find((v) => v.number === number)),
+      add: (version) => {
+        if (!surveys.get(version.surveyId)) {
+          throw new Error('fake FK: survey of another organization');
+        }
+        if (ofSurvey(version.surveyId).some((v) => v.number === version.number)) {
+          throw new Error('fake unique: version number taken');
+        }
+        versions.put(version);
+        return Promise.resolve();
+      },
+    },
     tx: {
       // Commits unless the work throws, like a real transaction.
       run: async (work) => {
@@ -162,6 +185,7 @@ export const createFakes = (options: { now?: Date } = {}) => {
           clients: new Map(clients.rows),
           surveys: new Map(surveys.rows),
           questionnaires: new Map(questionnaires.rows),
+          versions: new Map(versions.rows),
         };
         const auditLength = auditEntries.length;
         try {
@@ -170,6 +194,7 @@ export const createFakes = (options: { now?: Date } = {}) => {
           clients.rows = backup.clients;
           surveys.rows = backup.surveys;
           questionnaires.rows = backup.questionnaires;
+          versions.rows = backup.versions;
           auditEntries.length = auditLength;
           throw error;
         }
@@ -192,7 +217,7 @@ export const createFakes = (options: { now?: Date } = {}) => {
 
   return {
     deps,
-    tables: { clients, surveys, questionnaires },
+    tables: { clients, surveys, questionnaires, versions },
     auditEntries,
     locks,
     advance: (ms: number) => {

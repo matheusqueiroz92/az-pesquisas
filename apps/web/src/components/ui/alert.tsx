@@ -1,4 +1,4 @@
-import { CircleAlert, CircleCheck, Info } from 'lucide-react';
+import { CircleAlert, CircleCheck, Info, TriangleAlert } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/cn';
@@ -7,6 +7,10 @@ const TONES = {
   error: { box: 'bg-error-soft text-error-foreground border-error/25', Icon: CircleAlert },
   success: { box: 'bg-success-soft text-success-foreground border-success/25', Icon: CircleCheck },
   info: { box: 'bg-info-soft text-foreground border-info/20', Icon: Info },
+  warning: {
+    box: 'bg-warning-soft text-warning-foreground border-warning/25',
+    Icon: TriangleAlert,
+  },
 } as const;
 
 /** Status is never color alone: every tone carries an icon (spec 012). */

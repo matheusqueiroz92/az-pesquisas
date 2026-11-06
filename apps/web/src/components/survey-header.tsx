@@ -19,7 +19,7 @@ export function SurveyHeader({
   actions,
 }: {
   survey: SurveyView;
-  current: 'survey' | 'questionnaire';
+  current: 'survey' | 'questionnaire' | 'versions';
   actions?: ReactNode;
 }) {
   const tabs = [
@@ -29,6 +29,7 @@ export function SurveyHeader({
       href: `/pesquisas/${survey.id}/questionario`,
       label: t.questionnaire.tabQuestionnaire,
     },
+    { key: 'versions', href: `/pesquisas/${survey.id}/versoes`, label: t.versions.tab },
   ] as const;
   return (
     <>
@@ -42,6 +43,12 @@ export function SurveyHeader({
             <span>{t.surveyTypes[survey.type]}</span>
             <span aria-hidden>·</span>
             <span>{survey.clientName ?? t.surveys.ownSurvey}</span>
+            {survey.publishedVersion > 0 ? (
+              <>
+                <span aria-hidden>·</span>
+                <span className="font-mono">v{survey.publishedVersion}</span>
+              </>
+            ) : null}
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight">{survey.title}</h1>
           <p className="mt-2 font-mono text-xs tabular text-muted-foreground">

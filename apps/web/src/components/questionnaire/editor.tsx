@@ -22,6 +22,7 @@ import type { EditorAction } from '@/lib/questionnaire-editor';
 
 import { TextAreaField } from './fields';
 import { PhonePreview } from './phone-preview';
+import { PublishBar } from './publish-bar';
 import { QuestionForm } from './question-form';
 import { QuestionList } from './question-list';
 
@@ -102,7 +103,15 @@ function IssueList({
 }
 
 /** The questionnaire editor of one survey (spec 014). */
-export function QuestionnaireEditor({ initial }: { initial: QuestionnaireView }) {
+export function QuestionnaireEditor({
+  initial,
+  publishedVersion,
+  canPublish,
+}: {
+  initial: QuestionnaireView;
+  publishedVersion: number;
+  canPublish: boolean;
+}) {
   const surveyId = initial.surveyId;
   const readOnly = initial.lock !== null;
   const [draft, setDraft] = useState<QuestionnaireDraft>(initial.content);
@@ -274,7 +283,16 @@ export function QuestionnaireEditor({ initial }: { initial: QuestionnaireView })
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <IssueList issues={issues} codeOf={codeOf} onSelect={setSelectedId} />
-        {readOnly ? null : <StatusLine status={status} />}
+        <div className="flex flex-wrap items-center gap-4">
+          {readOnly ? null : <StatusLine status={status} />}
+          {canPublish && initial.lock !== 'archived' ? (
+            <PublishBar
+              surveyId={surveyId}
+              publishedVersion={publishedVersion}
+              saved={status === 'saved'}
+            />
+          ) : null}
+        </div>
       </div>
 
       <fieldset disabled={readOnly || status === 'conflict'} className="contents">

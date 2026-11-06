@@ -163,6 +163,9 @@ export default async function SurveysPage({
                         {survey.municipalityCount > 0
                           ? ` · ${t.surveys.municipalityCount(survey.municipalityCount)}`
                           : ''}
+                        {survey.publishedVersion > 0
+                          ? ` · v${String(survey.publishedVersion)}`
+                          : ''}
                       </p>
                       <p className="mt-1.5 md:hidden">
                         <StatusBadge tone={STATUS_TONE[survey.status]}>

@@ -8,6 +8,7 @@ const survey = (title: string, status: SurveySummary['status']): SurveySummary =
   title,
   type: 'market',
   status,
+  publishedVersion: 0,
   clientId: null,
   clientName: null,
   fieldStart: null,

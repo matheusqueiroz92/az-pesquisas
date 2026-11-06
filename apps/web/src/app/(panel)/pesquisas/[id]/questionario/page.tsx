@@ -37,6 +37,8 @@ export default async function QuestionnairePage({ params }: { params: Promise<{ 
       <QuestionnaireEditor
         key={`${id}-${String(questionnaire.data.revision)}`}
         initial={questionnaire.data}
+        publishedVersion={survey.data.publishedVersion}
+        canPublish={can(me.role, 'surveys.publish')}
       />
     </>
   );

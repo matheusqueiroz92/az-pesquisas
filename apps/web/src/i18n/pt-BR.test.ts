@@ -87,3 +87,23 @@ describe('profile block texts (spec 014, change 1)', () => {
     expect(Object.keys(t.profiles)).toHaveLength(7);
   });
 });
+
+describe('publication and versions texts (spec 015)', () => {
+  it('names versions and counts', () => {
+    expect(t.publication.publish(2)).toBe('Publicar versão 2');
+    expect(t.publication.published(0)).toBe('Nunca publicado');
+    expect(t.publication.published(3)).toBe('Publicado: versão 3');
+    expect(t.publication.title(1)).toBe('Publicar a versão 1?');
+    expect(t.publication.done(1)).toBe('Versão 1 publicada.');
+    expect(t.versions.version(4)).toBe('Versão 4');
+    expect(t.versions.questions(1)).toBe('1 pergunta');
+    expect(t.versions.questions(5)).toBe('5 perguntas');
+    expect(t.versions.rank(3)).toBe('Ordenar as 3 primeiras');
+    expect(t.versions.rank(undefined)).toBe('Ordenar todas');
+    expect(t.versions.selections(1, undefined)).toBe('Mínimo 1 marcação(ões)');
+    expect(t.versions.selections(1, 3)).toBe('De 1 a 3 marcações');
+    expect(t.versions.generated('01/01/2026')).toContain('01/01/2026');
+    expect(t.changeKinds.question_code('P1')).toBe('P1: código  → ');
+    expect(t.changeKinds.item_text('P1')).toBe('P1: rótulo alterado para ""');
+  });
+});
